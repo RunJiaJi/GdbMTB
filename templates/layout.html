@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MTB genomic database">
+    <meta name="author" content="jirunjia@gmail.com">
+    <title>MTB Database · Genomic</title>
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/dist/css/carousel.css') }}">
+    <link rel="icon" type="image/x-icon" href="./static/brand/logo.png">
+    {% if title %}
+        <title>MTB Database - {{ title }}</title>
+    {% else %}
+        <title>MTB Database</title>
+    {% endif %}
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="mail" viewBox="0 0 1024 1024">
+        <path d="M62.90432 812.29824l333.696-382.09024 53.9904 47.15008-333.696 382.09024zM575.616 477.3632l53.9904-47.1552 333.696 382.09536-53.9904 47.1552z" fill="#6BC2F7" p-id="15620"></path><path d="M54.0672 136.3968v735.3344h916.8896V136.3968H54.0672z m845.2096 71.68v26.4704L508.5184 482.2528 125.7472 232.96v-24.8832h773.5296zM125.7472 800.0512V318.464l382.2592 248.9856 391.2704-248.064v480.6144H125.7472z" fill="#596372" p-id="15621"></path>
+    </symbol>
+    </svg>
+
+    <header class="d-flex flex-wrap px-3 border-bottom navbar-fixed-top bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+        <a class="navbar-brand" href="/">MTB Database</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Browser</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/tree_of_mtb">Tree of MTB</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/statistics">Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/download">Download</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/tools">Tools</a>
+            </li>
+            </ul>
+            <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+        </div>
+    </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    <div class="container">
+
+        <footer class="page-footer fixed-bottom d-flex flex-wrap justify-content-between align-items-center py-2 px-3 border-top bg-white">
+        <div class="col-md-4 d-flex align-items-center">
+            <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+            <svg class="bi" width="30" height="24"><use xlink:href="#pcc"/></svg>
+            </a>
+            <span class="text-muted">&copy; 2023 PCC</span>
+        </div>
+        <span id="busuanzi_container_site_pv">Total Views: <span id="busuanzi_value_site_pv"></span></span>
+        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+            <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#youtube"/></svg></a></li>
+            <li class="ms-3"><a class="text-muted" href="mailto:#@gmail.com"><svg class="bi" width="24" height="24"><use xlink:href="#mail"/></svg></a></li>
+        </ul>
+        </footer>
+    </div>
+    </main>
+
+    <script src="./static/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
