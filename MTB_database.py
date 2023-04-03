@@ -6,9 +6,13 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@app.route("/tree_of_mtb")
-def tree_of_mtb():
-    return render_template('tree_of_mtb.html', title='Tree of MTB')
+@app.route("/browser")
+def browser():
+    return render_template('browser.html', title='Browser')
+
+@app.route("/tree")
+def tree():
+    return render_template('tree.html', title='Tree')
 
 @app.route("/statistics")
 def statistics():
