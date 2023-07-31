@@ -1,7 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Browser</h1>
-    <div class="container">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/4c_nbpHh1_4?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<div class="container mt-4">
+    <div class="card text-dark bg-light shadow bg-body rounded">
+        <div class="card-header" id="metaTable">
+            {{ tableHeader | safe}}
+        </div>
+        <div class="card-body">
+            {{ table | safe }}
+        </div>
     </div>
+</div>
+<script>
+    let table = new DataTable('#myTable', {scrollX: 1000,});
+//     let search_lable = document.querySelector('#myTable_filter').querySelector('label')
+//     let labletext = search_lable.innerHTML.replace('Search:', 'Filter:')
+//     search_lable.innerHTML=labletext
+</script>
 {% endblock content %}

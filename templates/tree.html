@@ -1,4 +1,77 @@
 {% extends "layout.html" %}
 {% block content %}
+    <div id="vg-tooltip-element" class="vg-tooltip light-theme" style="display: none; position: absolute; z-index: 999;">
+        <div class="card bg-dark">
+            <div class="card-body">
+                <p class="card-text text-light"></p>
+            </div>
+        </div>
+    </div>
     <h1>Tree of MTB</h1>
-{% endblock content %}
+    <div class="zoom_outer">
+        <div id="zoom">
+            {{ treeSVG | safe }}
+        </div>
+    </div>
+    
+    <script>
+        let tooltip_ele = document.querySelector("#vg-tooltip-element")
+        function domouseover(event) {
+            let name = event.target.parentElement.querySelector('text').textContent
+            if (name) {
+                tooltip_ele.querySelector('p').innerText = name
+                tooltip_ele.style.display = 'block'
+                tooltip_ele.style.top = event.y+40 + 'px'
+                tooltip_ele.style.left = event.x + 'px'
+            }
+        }
+        function domouseleave(event) {
+            tooltip_ele.style.display = 'none'
+        }
+
+        let tree = document.querySelectorAll('#treeHolder g')
+        tree.forEach(node => {
+            node.onmouseover = domouseover; 
+            node.onmouseleave = domouseleave;
+        })
+    </script>
+
+    <script>
+        var scale = 1,
+        panning = false,
+        pointX = 0,
+        pointY = 0,
+        start = { x: 0, y: 0 },
+        zoom = document.getElementById("zoom");
+      function setTransform() {
+        zoom.style.transform = "translate(" + pointX + "px, " + pointY + "px) scale(" + scale + ")";
+      }
+      zoom.onmousedown = function (e) {
+        e.preventDefault();
+        start = { x: e.clientX - pointX, y: e.clientY - pointY };
+        panning = true;
+      }
+      zoom.onmouseup = function (e) {
+        panning = false;
+      }
+      zoom.onmousemove = function (e) {
+        e.preventDefault();
+        if (!panning) {
+          return;
+        }
+        pointX = (e.clientX - start.x);
+        pointY = (e.clientY - start.y);
+        setTransform();
+      }
+      zoom.onwheel = function (e) {
+        e.preventDefault();
+        var xs = (e.clientX - pointX) / scale,
+          ys = (e.clientY - pointY) / scale,
+          delta = (e.wheelDelta ? e.wheelDelta : -e.deltaY);
+        (delta > 0) ? (scale *= 1.2) : (scale /= 1.2);
+        pointX = e.clientX - xs * scale;
+        pointY = e.clientY - ys * scale;
+        setTransform();
+      }
+    </script>
+    {% endblock content %}
