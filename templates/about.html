@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+  div.item {
+      vertical-align: top;
+      display: inline-block;
+      text-align: center;
+  }
+  img {
+    height: 100px;
+    width: 100px;
+  }
+  .caption {
+      display: block;
+  }
+</style>
+
+  <div class="container mt-4">
+
+    <div class="card text-dark bg-light shadow-lg bg-body rounded">
+      <div class="card-header" id="cardHeader">
+        GdbMTB
+      </div>
+      <div class="card-body row">
+        <div class="col-md-9">
+          <p>
+          随着全球范围内趋磁细菌多样性研究的日益深入，趋磁细菌基因组数据持续增长，
+          为了促进数据共享，便于研究者查找和获取趋磁细菌的基因组数据以及开展综合分析，
+          我们建立了趋磁细菌基因组数据库(Genomic database of MTB, GdbMTB)。
+          GdbMTB包括关键(初级)数据、分析(次级)数据和技术支持(分析工具和方法)三个部分。
+          关键数据囊括了公开发表的趋磁细菌基因组数据、采样元数据、16S rRNA基因数据、磁小体基因数据等，
+          分析数据包括趋磁细菌基因组的质量、系统发育地位、生存环境等基本分析信息，
+          技术支持提供了趋磁细菌基因组学分析的相关方法、工具和流程等(如MagCluster)。
+          
+        </p>
+        </div>
+        <div class="col-md-3 d-flex justify-content-center">
+          <img src="/static/brand/logo.png" alt="" style="height: 150px; width: auto;">
+        </div>
+      </div>
+    </div>
+
+    <div class="card text-dark bg-light shadow-lg bg-body rounded mt-4">
+      <div class="card-header" id="cardHeader">
+        Bio-Geomagnetism group
+      </div>
+      <div class="card-body">
+        <div class="row" style="margin-left:20px">
+          <div class="col-2">
+            <div class="card-body item">
+              <img src="/static/team/Pan.jpg" class="rounded-circle" alt="">
+              <a class='caption' href="http://sourcedb.igg.cas.cn/cn/zjrck/200907/t20090713_2065518.html">Yongxin Pan</a>
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="card-body item">
+              <img src="/static/team/Wei.jpg" class="rounded-circle" alt="" >
+              <a class='caption' href="http://sourcedb.igg.cas.cn/cn/zjrck/201303/t20130321_3802371.html"> Wei Lin</a>
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="card-body item">
+              <img src="/static/team/Ji.jpg" class="rounded-circle" alt="" >
+              <a class='caption' href="https://github.com/runjiaji"> Runjia Ji</a>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="flex-row d-flex justify-content-evenly">
+          <div class="card-body item">
+            <img src="/static/team/YongxinPan.jpg" class="rounded-circle" alt="" >
+            <a class='caption' href="http://sourcedb.igg.cas.cn/cn/zjrck/200907/t20090713_2065518.html">Professor Yongxin Pan</a>
+          </div>
+          <div class="card-body item">
+            <img src="/static/team/YongxinPan.jpg" class="rounded-circle" alt="" >
+            <a class='caption' href="http://sourcedb.igg.cas.cn/cn/zjrck/200907/t20090713_2065518.html">Professor Yongxin Pan</a>
+          </div>
+          <div class="card-body item">
+            <img src="/static/team/YongxinPan.jpg" class="rounded-circle" alt="" >
+            <a class='caption' href="http://sourcedb.igg.cas.cn/cn/zjrck/200907/t20090713_2065518.html">Professor Yongxin Pan</a>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="container fixed-bottom">
+    <footer class="py-3 my-4 ">
+      <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+      </ul>
+      <p class="text-center text-muted">&copy; 2022 Company, Inc</p>
+    </footer>
+  </div>
+{% endblock content %}

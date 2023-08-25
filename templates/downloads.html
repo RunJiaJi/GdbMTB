@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="card text-dark bg-light shadow-lg bg-body rounded">
+            <div class="card-header" id="cardHeader">
+                Download
+            </div>
+            <div class="card-body">
+                <table class="table align-middle border rounded">
+                    <thead class="table-dark">
+                        <tr>
+                            <td>
+                                Source
+                            </td>
+                            <td>
+                                Link
+                            </td>
+                            <td>
+                                Size
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                MTB genomes
+                            </td>
+                            <td>
+                                <a href="#">https://60.205.250.42/MTBgenomes</a>
+                            </td>
+                            <td>
+                                1.6 GB
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                16S rRNA gene sequence
+                            </td>
+                            <td>
+                                <a href="#">https://60.205.250.42/16S</a>
+                            </td>
+                            <td>
+                                30 MB
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

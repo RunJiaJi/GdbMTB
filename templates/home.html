@@ -1,62 +1,479 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="container">
-  <div class="row border border-primary border-2 justify-content-center">
-    <div class="col-10 align-self-center">
-      <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false">
-        <div class="carousel-indicators">
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+<style>
+  #chartdiv {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  }
+</style>
+
+<div class="container-fluid" style="height: 90vh;">
+  <div class="d-flex flex-row justify-content-evenly align-items-center h-100">
+    <div id="chartdiv" style="width: 50%;"></div>
+    <div class="container mt-4 d-flex align-items-center justify-content-center " style="width: 50%; height: 100%; position: relative;">
+      <div class="card text-black bg-light shadow-lg rounded p-2" style="height: 60%; width: 100%;">
+        <div class="card-body d-flex flex-column justify-content-center">
+          <img src="/static/figure/rect8364_.svg" class="img-fluid" alt="...">
+          <!-- <h4 class="text-center"><span class="text-decoration-underline">G</span>enomic <span class="text-decoration-underline">d</span>ata<span class="text-decoration-underline">b</span>ase of <span class="text-decoration-underline">M</span>agneto<span class="text-decoration-underline">t</span>actic <span class="text-decoration-underline">B</span>acteria</h4>
+          <h3 class="text-center" style="font-weight: bold;">GdbMTB</h3>
+          <img src="/static/figure/env_counts_.svg" class="rounded float-end" alt="..." width="420"> -->
+
         </div>
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="/static/brand/Map_clipEdge_300dpi.png" class="d-block w-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-              <h5>MTB genomes distribution</h5>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="/static/brand/Map_clipEdge_300dpi.png" class="d-block w-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-              <h5>Second slide label</h5>
-              <p>Some representative placeholder content for the second slide.</p>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="/static/brand/Map_clipEdge_300dpi.png" class="d-block w-100" alt="...">
-            <div class="carousel-caption d-none d-md-block">
-              <h5>Third slide label</h5>
-              <p>Some representative placeholder content for the third slide.</p>
-            </div>
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
       </div>
+    </div>    
+               
     </div>
   </div>
 </div>
 
-<div class="container">
-  <div class="row border border-primary border-2 justify-content-evenly">
-    <div class="col-sm-12 col-md-6 align-self-center border border-primary border-2">
-      <p class="lead">
-        🎉🎉🎉Welcome to MTB Database!
-        This site provides genomic data and statistical information of magnetotactic bacteria, 
-        including the published genomes, phylogenomic tree of MTB, magnetosome gene clusters (MGCs) and so on.
-      </p>
-    </div>
-    <div class="col-sm-12 col-md-6 align-self-center border border-primary border-2">
-      <img width="239" height="239" src="/static/brand/logo.png" class="mx-auto d-block"></img>
-    </div>
-  </div>
-</div>
+
+<script>
+/**
+* ---------------------------------------
+* This demo was created using amCharts 5.
+* 
+* For more information visit:
+* https://www.amcharts.com/
+* 
+* Documentation is available at:
+* https://www.amcharts.com/docs/v5/
+* ---------------------------------------
+*/
+
+// Create root element
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+var root = am5.Root.new("chartdiv");
+
+
+// Set themes
+// https://www.amcharts.com/docs/v5/concepts/themes/
+root.setThemes([
+am5themes_Animated.new(root)
+]);
+
+
+// Create the map chart
+// https://www.amcharts.com/docs/v5/charts/map-chart/
+var chart = root.container.children.push(am5map.MapChart.new(root, {
+panX: "rotateX",
+panY: "none",
+projection: am5map.geoOrthographic(),
+paddingBottom: 20,
+paddingTop: 20,
+paddingLeft: 20,
+paddingRight: 20
+}));
+
+
+// Create main polygon series for countries
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+geoJSON: am5geodata_worldLow
+}));
+
+polygonSeries.mapPolygons.template.setAll({
+fill: am5.color(0x333333),
+stroke: am5.color(0xffffff),
+strokeWidth: 0.03,
+});
+
+// polygonSeries.mapPolygons.template.states.create("hover", {
+//   fill: root.interfaceColors.get("primaryButtonHover")
+// });
+
+
+// Create series for background fill
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
+var backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
+backgroundSeries.mapPolygons.template.setAll({
+fill: root.interfaceColors.get("alternativeBackground"),
+fillOpacity: 0.1,
+strokeOpacity: 0,
+});
+backgroundSeries.data.push({
+geometry: am5map.getGeoRectangle(90, 180, -90, -180)
+});
+
+
+// Create graticule series
+// https://www.amcharts.com/docs/v5/charts/map-chart/graticule-series/
+// var graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
+// graticuleSeries.mapLines.template.setAll({ strokeOpacity: 0.1, stroke: root.interfaceColors.get("alternativeBackground") })
+
+// Create point series for markers
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-point-series/
+var pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+var colorset = am5.ColorSet.new(root, {});
+
+pointSeries.bullets.push(function() {
+var container = am5.Container.new(root, {
+  tooltipText: "{title}",
+  cursorOverStyle: "pointer"
+});
+
+// This is code to add superlink onto the city.
+// container.events.on("click", (e) => {
+//   window.location.href = e.target.dataItem.dataContext.url;
+// });
+
+
+
+var circle = container.children.push(
+  am5.Circle.new(root, {
+    radius: 4,
+    tooltipY: 0,
+    fill: am5.color(0x9D0208),
+    strokeOpacity: 0
+  })
+);
+
+
+var circle2 = container.children.push(
+  am5.Circle.new(root, {
+    radius: 4,
+    tooltipY: 0,
+    fill: am5.color(0xD00000),
+    strokeOpacity: 0,
+    tooltipText: "{title}"
+  })
+);
+
+circle.animate({
+  key: "scale",
+  from: 2,
+  to: 4,
+  duration: 1800,
+  easing: am5.ease.out(am5.ease.cubic),
+  loops: Infinity
+});
+circle.animate({
+  key: "opacity",
+  from: 0.3,
+  to: 0.2,
+  duration: 1800,
+  easing: am5.ease.out(am5.ease.cubic),
+  loops: Infinity
+});
+
+return am5.Bullet.new(root, {
+  sprite: container
+});
+});
+
+var cities = [{title: 'Sweden: Oskarshamn\nUncultured_microorganism_SbSrfc_SA12_01_D19', latitude: 57.4354483, longitude: 16.6691272},
+ {title: 'USA: Nevada\nOmnitrophica_bacterium_SCGC_AG-290-C17', latitude: 37.1312714, longitude: -116.8425033},
+ {title: 'Greece: Etoliko Lagoon\nRhodospirillaceae_bacterium_MAG_01419_mvb_30', latitude: 38.4884872, longitude: 21.2875175},
+ {title: 'USA: Sakinaw Lake\nLatescibacteria_bacterium_SCGC_AAA252-B13', latitude: 49.95898915, longitude: -123.8279332},
+ {title: 'USA: White Oak River Estuary, North Carolina\nNitrospira_bacterium_SG8_35_4', latitude: 34.8496625, longitude: -76.5931208},
+ {title: 'Germany: Lake Chiemsee, Bavaria\nCandidatus_Magnetobacterium_bavaricum_TM-1', latitude: 47.8690367, longitude: 12.397835},
+ {title: 'Germany: Lake Chiemsee, Bavaria\nCandidatus_Magnetoovum_chiemensis_CS-04', latitude: 47.8690367, longitude: 12.397835},
+ {title: 'USA: White Oak River Estuary, North Carolina\nPlanctomycetes_bacterium_SM23_25', latitude: 34.8496625, longitude: -76.5931208},
+ {title: 'China: Qinghai\nPlanctomycetota_bacterium_nTSbin13', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'Greece: Aitoliko Lagoon\nPlanctomycetes_bacterium_SCGC_JGI090-P21', latitude: 38.4884872, longitude: 21.2875175},
+ {title: 'China: Wuhan, East Lake\nMagnetococcales_bacterium_DH2_bin20', latitude: 30.552824, longitude: 114.4096587},
+ {title: 'USA: Minnesota\nDeltaproteobacteria_bacterium_MAG_17996_sntb_20', latitude: 47.50280878, longitude: -93.48311691},
+ {title: 'USA: Minnesota\nDeltaproteobacteria_bacterium_MAG_17929_sntb_26', latitude: 47.50280878, longitude: -93.48311691},
+ {title: 'Indian Ocean:near North Sumatra\nDeltaproteobacteria_bacterium_MAG_09788_naph_37', latitude: 4.3685491, longitude: 97.0253024},
+ {title: 'Sweden:KBB site, Vaertahamnen, Baltic Sea\nDeltaproteobacteria_bacterium_MAG_00241_naph_010', latitude: 59.3511131, longitude: 18.1072271},
+ {title: 'Sweden:KBA site, Vaertahamnen, Baltic Sea\nDeltaproteobacteria_bacterium_MAG_00134_naph_006', latitude: 59.3634521, longitude: 18.1205996},
+ {title: 'Brazil: Araruama Lagoon\nCandidatus_Magnetoglobus_multicellularis_str._Araruama', latitude: -22.8324228, longitude: -42.2170932},
+ {title: 'Germany:Wadden Sea, near Cuxhaven\nCandidatus_Magnetomorum_sp._HK-1', latitude: 53.88993105, longitude: 8.682073791},
+ {title: 'Canada: Ontario\nDesulfuromonadales_bacterium_MAG_21601_9_030', latitude: 52.9312176, longitude: -85.85237999},
+ {title: 'Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe\nSyntrophales_bacterium_LBB04', latitude: 55.6201778, longitude: 39.7283484},
+ {title: 'Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00212_gam_1', latitude: 48.76081265, longitude: -123.1915089},
+ {title: 'USA: California, Salton Sea\nCandidatus_Hydrogenedentes_bacterium_MAG_17963_hgd_111', latitude: 33.01732645, longitude: -115.927088},
+ {title: 'USA: California, Salton Sea\nCandidatus_Hydrogenedentes_bacterium_MAG_17971_hgd_130', latitude: 33.01732645, longitude: -115.927088},
+ {title: 'USA: Rifle, CO\nOmnitrophica_WOR_2_bacterium_GWA2_45_18', latitude: 39.536877, longitude: -107.782894},
+ {title: 'USA: Rifle, CO\nOmnitrophica_WOR_2_bacterium_GWC2_45_7', latitude: 39.536877, longitude: -107.782894},
+ {title: 'Australia: Mount Beauty Pondage\nCandidatus_Omnitrophica_bacterium_MBPbin6', latitude: -36.7385789, longitude: 147.1642309},
+ {title: 'Australia: Lake Catani\nCandidatus_Omnitrophica_bacterium_Cal1bin1', latitude: -36.735271, longitude: 146.8112389},
+ {title: 'China: Qinghai\nCandidatus_Omnitrophica_bacterium_nXXbin4', latitude: 38.2521603, longitude: 90.8593199},
+ {title: 'China: Innermogolia\nCandidatus_Omnitrophica_bacterium_nW3bin14', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Qinghai\nCandidatus_Omnitrophica_bacterium_nS315bin20', latitude: 38.2346574, longitude: 90.7079553},
+ {title: 'China: Qinghai\nCandidatus_Omnitrophica_bacterium_nS315bin24', latitude: 38.2346574, longitude: 90.7079553},
+ {title: 'Australia: Mount Beauty Pondage\nCandidatus_Omnitrophica_bacterium_nMBPbin3', latitude: -36.7385789, longitude: 147.1642309},
+ {title: 'China: Innermogolia\nCandidatus_Omnitrophica_bacterium_nHLHbin2', latitude: 48.9662, longitude: 117.76},
+ {title: 'China: Innermogolia\nCandidatus_Omnitrophica_bacterium_nHGRbin18', latitude: 41.5801479, longitude: 108.3476293},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH6bin5', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH6bin28', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH6bin18', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH6bin14', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH6bin13', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH2bin18', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH2bin13', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH15bin6', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH15bin13', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH13bin20', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nCandidatus_Omnitrophica_bacterium_nDJH13bin13', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'Australia: Lake Catani\nCandidatus_Omnitrophica_bacterium_nCal1bin2', latitude: -36.735271, longitude: 146.8112389},
+ {title: 'Australia: Lake Catani\nCandidatus_Omnitrophica_bacterium_nCal2bin1', latitude: -36.7361569, longitude: 146.8096375},
+ {title: 'Germany: Lake Chiemsee, Bavaria\nCandidatus_Omnitrophus_magneticus_SKK-01', latitude: 47.8690367, longitude: 12.397835},
+ {title: 'China: Innermogolia\nCandidatus_Riflebacteria_bacterium_nHGRbin4', latitude: 41.5801479, longitude: 108.3476293},
+ {title: 'China: Dajiu Lake\nCandidatus_Riflebacteria_bacterium_nDJH6bin19', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nCandidatus_Riflebacteria_bacterium_nDJH14bin3', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'Atlantic Ocean: North Pond\nElusimicrobia_bacterium_NORP122', latitude: 1.401732757, longitude: -20.1748373},
+ {title: 'Russia: Moscow Region, Durykino ravine\nCandidatus_Liberimonas_magnetica_DUR002', latitude: 56.0504784, longitude: 37.1536644},
+ {title: 'Russia: Moscow Region, Durykino ravine\nCandidatus_Obscuribacterium_magneticum_DUR003', latitude: 56.0504784, longitude: 37.1536644},
+ {title: 'Australia: Gellibrand River\nFibrobacteria_bacterium_nGRbin1', latitude: -38.6970859, longitude: 143.1549351},
+ {title: 'Arctic Ocean: Canada Basin\nNitrospinae_bacterium_MAG_09705_ntspn_70', latitude: 77.0991, longitude: -150.2252},
+ {title: 'China: Beijing\nNitrospinae_bacterium_nWMHbin6', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'Australia: Punkally Creek\nNitrospinae_bacterium_nPCRbin9', latitude: -36.2319047, longitude: 150.0712607},
+ {title: 'China: Innermogolia\nNitrospinae_bacterium_nNGHbin12', latitude: 48.0676111, longitude: 119.0431367},
+ {title: 'China: Innermogolia\nNitrospinae_bacterium_nARSLQbin3', latitude: 47.20458, longitude: 119.92181},
+ {title: 'northern gulf of mexico hypoxic zone\nUnclassified_Nitrospina_Bin_25', latitude: 25.55972, longitude: -90.381043},
+ {title: 'China: Lake Miyun\nNitrospirae_bacterium_MYbin6', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Lake Miyun\nNitrospirae_bacterium_MYbin3', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Lake Miyun\nNitrospirae_bacterium_MYbinv3', latitude: 40.4759523, longitude: 117.018088},
+ {title: "China: Xi'an city moat\nNitrospirota_bacterium_HCHbin1", latitude: 34.252492, longitude: 108.9220092},
+ {title: 'China: Lake Miyun\nNitrospirota_bacterium_MYbin2', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Lake Dianchi\nNitrospirota_bacterium_DC0425bin1', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'South Africa: Limpopo\nNitrospirota_bacterium_MAG_10313_ntr_31', latitude: -22.527765, longitude: 30.6809239},
+ {title: 'China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin6', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin4', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin3', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin2', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin1', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'China: Xian city moat\nNitrospirota_bacterium_nHCHbin2', latitude: 34.252492, longitude: 108.9220092},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin7', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin8', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin6', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin13', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH6bin1', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH5bin4', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH15bin8', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH15bin2', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH14bin9', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH14bin7', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH14bin5', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin3', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin21', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin15', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin1', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin19', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Lake Dianchi\nNitrospirota_bacterium_nDC0425bin1', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'Indian Ocean: Longqi hydrothermal vent field, ultraslow-spreading Southwestern Indian Ridge\nNitrospirota_bacterium_Dive96_bin3.242', latitude: -37.78, longitude: 49.64},
+ {title: 'China: the Paracel Islands\n\nCandidatus_Magnetocorallium_paracelense_XS-1', latitude: 16.66854883, longitude: 112.1929314},
+ {title: 'Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe\nNitrospirales_bacterium_LBB_01', latitude: 55.6201778, longitude: 39.7283484},
+ {title: 'China: Shaanxi, Xianyang Lake\nCandidatus_Magnetobacterium_sp._XYR', latitude: 34.3287908, longitude: 108.7211303},
+ {title: 'China: Shaanxi, Xianyang Lake\nCandidatus_Magnetobacterium_sp._XYC', latitude: 34.3287908, longitude: 108.7211303},
+ {title: 'China: Lake Miyun, Beijing\nCandidatus_Magnetobacterium_casensis_MYR-1', latitude: 40.5080959, longitude: 116.9324543},
+ {title: 'Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe\nCandidatus_Magnetominusculus_sp._LBB02', latitude: 55.6201778, longitude: 39.7283484},
+ {title: "China: city moat, Xi'an\nCandidatus_Magnetominusculus_xianensis_HCH-1", latitude: 34.252492, longitude: 108.9220092},
+ {title: 'USA: California, Salton Sea\nPlanctomycetota_bacterium_MAG_18080_pl_157', latitude: 33.01732645, longitude: -115.927088},
+ {title: 'USA: California, Salton Sea\nPlanctomycetota_bacterium_MAG_17991_pl_60', latitude: 33.01732645, longitude: -115.927088},
+ {title: 'Denmark:Aarhus Bay\nPlanctomycetota_bacterium_MAG_11118_pl_115', latitude: 55.670249, longitude: 10.3333283},
+ {title: 'Australia: Waganaga Inlet\nPlanctomycetota_bacterium_nwagbin3', latitude: -36.21825955, longitude: 150.122141},
+ {title: 'China: Lake Weiming\nAlphaproteobacteria_bacterium_WMHbin7', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Beijing\nAlphaproteobacteria_bacterium_nYQH56bin3', latitude: 40.39691885, longitude: 116.6789784},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nWRX3bin4', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Beijing\nAlphaproteobacteria_bacterium_nWMHbin5', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Qinghai\nAlphaproteobacteria_bacterium_nTSbin12', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Qinghai\nAlphaproteobacteria_bacterium_nSSYDbin4', latitude: 37.848687, longitude: 95.3600242},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nQXH1bin1', latitude: 47.771781, longitude: 119.393191},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nN3bin14', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nN2-2bin2', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nN2-2bin1', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Qinghai, Keluke Lake\nAlphaproteobacteria_bacterium_nKLKbin1', latitude: 37.289255, longitude: 96.8595345},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nJC2bin54', latitude: 41.6866428, longitude: 108.3977172},
+ {title: 'China: Innermogolia\nAlphaproteobacteria_bacterium_nJC1bin3', latitude: 41.6866428, longitude: 108.3977172},
+ {title: 'China: Dajiu Lake\nAlphaproteobacteria_bacterium_nDJH14bin10', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Yuandadu Park\nMagnetococcales_bacterium_YD0425bin7', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Lake Weiming\nMagnetococcales_bacterium_WMHbinv6', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Lake Weiming\nMagnetococcales_bacterium_WMHbin3', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Lake Weiming\nMagnetococcales_bacterium_WMHbin1', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Pond, Hongan\nMagnetococcales_bacterium_HA3dbin3', latitude: 31.1779391, longitude: 114.5464272},
+ {title: "China: Xi'an city moat\nMagnetococcales_bacterium_HCHbin5", latitude: 34.252492, longitude: 108.9220092},
+ {title: 'China: Pond, Hongan\nMagnetococcales_bacterium_HA3dbin1', latitude: 31.1779391, longitude: 114.5464272},
+ {title: 'Australia: Erskine River\nMagnetococcales_bacterium_ER1bin7', latitude: -38.53488, longitude: 143.9771079},
+ {title: 'China: Rice field, Hongan\nMagnetococcales_bacterium_HAa3bin1', latitude: 31.1779391, longitude: 114.5464272},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_DCbin2', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_DC0425bin3', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_DCbin4', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'China: Wuhan, East Lake\nMagnetococcales_bacterium_DH2_bin6', latitude: 30.552824, longitude: 114.4096587},
+ {title: 'USA: Colorado\nMagnetococcales_bacterium_MAG_21055_mgc_1', latitude: 38.9594459, longitude: -106.990597},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nYD0423bin3', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nYD0423bin2', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nYD0425bin13', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin7', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin6', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin2', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin12', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin11', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin10', latitude: 48.0617, longitude: 117.801},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX2bin6', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin6', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin5', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin1', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin12', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin3', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin11', latitude: 48.2319669, longitude: 117.6247069},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nWMHbin2', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nWMHbin4', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nWMHbin1', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'China: Beijing\nMagnetococcales_bacterium_nWMHbin3', latitude: 39.99171495, longitude: 116.303935},
+ {title: 'Australia: Wallaga Lake\nMagnetococcales_bacterium_nwalbin5', latitude: -36.3597021, longitude: 150.0742289},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nW5bin3', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'Australia: Waganaga Inlet\nMagnetococcales_bacterium_nwagbin5', latitude: -36.21825955, longitude: 150.122141},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nW5bin1', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nQXH2bin5', latitude: 47.4701009, longitude: 119.4432198},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nQXH2bin1', latitude: 47.4701009, longitude: 119.4432198},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nNGHbin2', latitude: 48.0676111, longitude: 119.0431367},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nNGHbin14', latitude: 48.0676111, longitude: 119.0431367},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nNGHbin13', latitude: 48.0676111, longitude: 119.0431367},
+ {title: 'China: Beijing, Lake Miyun\nMagnetococcales_bacterium_nMYbin5', latitude: 40.4759523, longitude: 117.018088},
+ {title: 'Australia: Mount Beauty Pondage\nMagnetococcales_bacterium_nMBPbin6', latitude: -36.7385789, longitude: 147.1642309},
+ {title: 'China: Qinghai, Keluke Lake\nMagnetococcales_bacterium_nKLKbin4', latitude: 37.289255, longitude: 96.8595345},
+ {title: 'China: Yingkou\nMagnetococcales_bacterium_nJSWbin3', latitude: 40.2220548, longitude: 122.0837375},
+ {title: 'China: Yingkou\nMagnetococcales_bacterium_nJSWbin2', latitude: 40.2220548, longitude: 122.0837375},
+ {title: 'China: Yingkou\nMagnetococcales_bacterium_nJSWbin1', latitude: 40.2220548, longitude: 122.0837375},
+ {title: 'China: Xian city moat\nMagnetococcales_bacterium_nHCHbin1', latitude: 34.252492, longitude: 108.9220092},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA5abin3', latitude: 31.2843334, longitude: 114.9102795},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHAa3bin1', latitude: 31.1779391, longitude: 114.5464272},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA5abin2', latitude: 31.2843334, longitude: 114.9102795},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA4bin8', latitude: 31.292127, longitude: 114.918476},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA3dbin2', latitude: 31.1779391, longitude: 114.5464272},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA4bin1', latitude: 31.292127, longitude: 114.918476},
+ {title: 'Australia: Gellibrand River\nMagnetococcales_bacterium_nGRbin4', latitude: -38.6970859, longitude: 143.1549351},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA3dbin1', latitude: 31.1779391, longitude: 114.5464272},
+ {title: 'China: Hongan\nMagnetococcales_bacterium_nHA1bin2', latitude: 31.292127, longitude: 114.918476},
+ {title: 'Australia: Erskine River\nMagnetococcales_bacterium_nER1bin6', latitude: -38.53488, longitude: 143.9771079},
+ {title: 'Australia: Erskine River\nMagnetococcales_bacterium_nER1bin1', latitude: -38.53488, longitude: 143.9771079},
+ {title: 'China: Dajiu Lake\nMagnetococcales_bacterium_nDJH8bin2', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'Australia: Corunna Lake\nMagnetococcales_bacterium_nCLbin10', latitude: -38.2382179, longitude: 144.4285999},
+ {title: 'China: Lake East\nMagnetococcales_bacterium_nDH2bin7', latitude: 30.552824, longitude: 114.4096587},
+ {title: 'China: Lake East\nMagnetococcales_bacterium_nDH2bin6', latitude: 30.552824, longitude: 114.4096587},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_nDC0425bin2', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_nDC0425bin4', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_nDCbin4', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'China: Lake Dianchi\nMagnetococcales_bacterium_nDCbin2', latitude: 24.9033068, longitude: 102.7596249},
+ {title: 'Australia: Corunna Lake\nMagnetococcales_bacterium_nCLbin6', latitude: -38.2382179, longitude: 144.4285999},
+ {title: 'China: Innermogolia\nMagnetococcales_bacterium_nARSLQbin1', latitude: 47.20458, longitude: 119.92181},
+ {title: 'Russia: Uda River\nCandidatus_Magnetaquicoccus_inordinatus_UR-1', latitude: 51.8229, longitude: 107.619},
+ {title: 'Pettaquamscutt Estuary, Rhode Island, USA\nMagnetococcus_marinus_MC-1', latitude: 41.519276, longitude: -71.445556},
+ {title: 'Brazil: Itaipu Lagoon, Niteroi, Rio de Janeiro State\nMagnetofaba_australis_IT-1', latitude: -22.9665136, longitude: -43.0427063},
+ {title: 'Japan: Atsumi Peninsula\nRhodovastum_atsumiense_G2-11', latitude: 34.716389, longitude: 137.366607},
+ {title: 'Pacific Ocean: Eastern Tropical North Pacific\nRhodospirillaceae_bacterium_MAG_22225_2-02_112', latitude: 20.3333, longitude: -107.0},
+ {title: 'USA:Crystal Bog, Wisconsin, USA\nRhodospirillaceae_bacterium_MAG_06104_tlms_034', latitude: 46.006418, longitude: -89.60718},
+ {title: 'Pacific Ocean: Eastern Tropical North Pacific\nRhodospirillaceae_bacterium_MAG_05596_2-02_51', latitude: 31.26837999, longitude: -172.0185525},
+ {title: 'Pacific Ocean: Eastern Tropical North Pacific\nRhodospirillaceae_bacterium_MAG_05422_2-02_14', latitude: 31.26837999, longitude: -172.0185525},
+ {title: 'USA:Crystal Bog, Wisconsin, USA\nRhodospirillaceae_bacterium_MAG_04806_tlms_2', latitude: 46.006418, longitude: -89.60718},
+ {title: 'Boulder Beach, Lake Mead, Nevada\nRhodospirillaceae_bacterium_LM-1', latitude: 36.0427571, longitude: -114.7999856},
+ {title: 'China: Xi鈥檃n City moat\nMagnetospirillum_sp._XM-1_XM1', latitude: 34.2524563, longitude: 108.9212944},
+ {title: 'China: East Lake sediment, Wuhan city\nMagnetospirillum_sp._ME-1', latitude: 30.5483709, longitude: 114.36017},
+ {title: 'Alamo River near the\nSalton Sea, California\nMagnetospirillum_sp._SS-4', latitude: 33.201109, longitude: -115.602421},
+ {title: 'Pond near Zion National\nPark, Utah\nMagnetospirillum_sp._UT-4', latitude: 37.2452462, longitude: -113.1446629},
+ {title: 'Boulder Beach,\nLake Mead, Nevada\nMagnetospirillum_sp._LM-5', latitude: 36.0427571, longitude: -114.7999856},
+ {title: 'Russia:Krasnodar krai\nMagnetospirillum_caucaseum_SO-1', latitude: 45.22524505, longitude: 38.98107362},
+ {title: 'Germany: Ryck River\nMagnetospirillum_gryphiswaldense_MSR-1_v2', latitude: 54.1033529, longitude: 13.3892363},
+ {title: 'Russia: Moscow region\nMagnetospirillum_kuznetsovii_LBB-42', latitude: 55.2628156, longitude: 39.19893496},
+ {title: 'Koganei, Tokyo\nMagnetospirillum_magneticum_AMB-1', latitude: 35.699451, longitude: 139.503121},
+ {title: 'USA: Cedar Swamp, Massachusetts\nMagnetospirillum_magnetotacticum_MS-1', latitude: 42.0601808, longitude: -72.2999053},
+ {title: 'Russia: Pshada River\nMagnetospirillum_marisnigri_SP-1', latitude: 44.5027838, longitude: 38.4268038},
+ {title: 'Russia: Moskva River\nMagnetospirillum_moscoviense_BB-1', latitude: 55.78050025, longitude: 37.02502466},
+ {title: 'China:Sanya\nTerasakiella_sp._SH-1', latitude: 18.291389, longitude: 109.349722},
+ {title: 'France: Pointe Rouge Marina in Marseille\nCandidatus_Terasakiella_magnetica_PR-1', latitude: 43.24397565, longitude: 5.365716372},
+ {title: 'France: Couze Pavin, Auvergne\nCandidatus_Terasakiella_magnetica_PR1', latitude: 45.5088229, longitude: 2.9018778},
+ {title: 'Huiquan Bay, Qingdao, China\nMagnetospira_sp._QH-2', latitude: 36.0574931, longitude: 120.3318569},
+ {title: 'Indian Ocean:Northwest Arabian Sea Upwelling Province\nMagnetovibrio_sp._ARS8', latitude: 12.4058908, longitude: 63.292},
+ {title: 'USA: salt marsh pool, Neponset River estuary, Boston, MA\nMagnetovibrio_blakemorei_MV-1', latitude: 39.7837304, longitude: -100.445882},
+ {title: 'Australia: Punkally Creek\nCandidatus_Lambdaproteobacteria_bacterium_PCRbin3', latitude: -36.2319047, longitude: 150.0712607},
+ {title: 'China: Yuandadu Park\nDeltaproteobacteria_bacterium_YD0425bin50', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Yuandadu Park\nDeltaproteobacteria_bacterium_YD0425bin51', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'Australia: Erskine River\nDeltaproteobacteria_bacterium_ER2bin7', latitude: -38.53542755, longitude: 143.9747173},
+ {title: 'USA: California\nDeltaproteobacteria_bacterium_MAG_22204_dsfv_001', latitude: 38.0251109, longitude: -122.1389221},
+ {title: 'USA: California\nDeltaproteobacteria_bacterium_MAG_22309_dsfv_022', latitude: 38.0513087, longitude: -121.9149596},
+ {title: 'Sweden: Oskarshamn\nDeltaproteobacteria_bacterium_MAG_15370_dsfb_81', latitude: 57.4354483, longitude: 16.6691272},
+ {title: 'Sweden:KBA site, Vaertahamnen, Baltic Sea\nDeltaproteobacteria_bacterium_MAG_00792_naph_016', latitude: 59.3634521, longitude: 18.1205996},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH8bin5', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH5bin8', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH6bin12', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH2bin9', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH15bin4', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH13bin5', latitude: 31.4745221, longitude: 110.0105023},
+ {title: 'China: Qinghai\nSAR324_cluster_bacterium_nTSbin10', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'Australia: Punkally Creek\nSAR324_cluster_bacterium_nPCRbin7', latitude: -36.2319047, longitude: 150.0712607},
+ {title: 'Australia: Punkally Creek\nSAR324_cluster_bacterium_nPCRbin10', latitude: -36.2319047, longitude: 150.0712607},
+ {title: 'China: Qinghai, Keluke Lake\nSAR324_cluster_bacterium_nKLKbin6', latitude: 37.289255, longitude: 96.8595345},
+ {title: 'China: Qinghai\nDeltaproteobacteria_bacterium_nXXbin1', latitude: 38.2521603, longitude: 90.8593199},
+ {title: 'China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH6bin20', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Beijing\nDesulfobacterales_bacterium_nYD0425bin6', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Beijing\nDesulfobacterales_bacterium_nYD0425bin5', latitude: 39.97443735, longitude: 116.3686995},
+ {title: 'China: Qinghai\nDesulfobacterales_bacterium_nTSbin1', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Innermogolia\nDesulfobacterales_bacterium_nHLHbin5', latitude: 48.9662, longitude: 117.76},
+ {title: 'France: Carry-le-Rouet\nuncultured_Desulfobacteraceae_bacterium_CR-1', latitude: 43.3347308, longitude: 5.175119491},
+ {title: 'Australia: Erskine River\nCandidatus_Magnetomorum_sp._nER2bin1', latitude: -38.53542755, longitude: 143.9747173},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nXXbin12', latitude: 38.2521603, longitude: 90.8593199},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nTSbin21', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nTSbin4', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nTSbin20', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nTSbin15', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nS315bin44', latitude: 38.2346574, longitude: 90.7079553},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nS315bin9', latitude: 38.2346574, longitude: 90.7079553},
+ {title: 'China: Qinghai\nDesulfamplus_sp._nS315bin3', latitude: 38.2346574, longitude: 90.7079553},
+ {title: 'China: Innermogolia\nDesulfamplus_sp._nN2-2bin5', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Innermogolia\nDesulfamplus_sp._nJC1bin9', latitude: 41.6866428, longitude: 108.3977172},
+ {title: 'China: Innermogolia\nDesulfamplus_sp._nHLHbin7', latitude: 48.9662, longitude: 117.76},
+ {title: 'China: Innermogolia\nDesulfamplus_sp._nHGRbin17', latitude: 41.5801479, longitude: 108.3476293},
+ {title: 'Australia: Erskine River\nDesulfamplus_sp._nER1bin2', latitude: -38.53488, longitude: 143.9771079},
+ {title: 'China: Lake East\nDesulfamplus_sp._nDH2bin3', latitude: 30.552824, longitude: 114.4096587},
+ {title: 'USA: Death Valley National Park\nDesulfamplus_magnetovallimortis_BW-1', latitude: 36.29256785, longitude: -117.1988521},
+ {title: 'China: Qinghai\nDesulfobulbaceae_bacterium_nTSbin18', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Dajiu Lake\nDesulfovibrionaceae_bacterium_nDJH8bin10', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'China: Dajiu Lake\nDesulfovibrionaceae_bacterium_nDJH2bin10', latitude: 31.5415029, longitude: 110.016347},
+ {title: 'Kameno river, Japan\nSolidesulfovibrio_magneticus_RS-1', latitude: 34.1745523, longitude: 135.2370569},
+ {title: 'Democratic Republic of the Congo: South-Kivu, Lake Kivu, Kabuno Bay\nDesulfuromonadales_bacterium_MAG_13126_9_058', latitude: -2.04187375, longitude: 29.06788307},
+ {title: 'Canada: Ontario\nDesulfuromonadales_bacterium_MAG_21600_9_004', latitude: 49.7641591, longitude: -93.7955242},
+ {title: 'Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00215_gam_020', latitude: 48.76081265, longitude: -123.1915089},
+ {title: 'Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00172_gam_018', latitude: 48.76081265, longitude: -123.1915089},
+ {title: 'Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00188_gam_006', latitude: 48.76081265, longitude: -123.1915089},
+ {title: 'Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00160_gam_009', latitude: 48.76081265, longitude: -123.1915089},
+ {title: 'Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00150_gam_010', latitude: 48.76081265, longitude: -123.1915089},
+ {title: 'China: Qinghai\nGammaproteobacteria_bacterium_nTSbin2', latitude: 37.2050575, longitude: 96.8548847},
+ {title: 'China: Qinghai\nGammaproteobacteria_bacterium_nS315bin38', latitude: 38.2346574, longitude: 90.7079553},
+ {title: 'Australia: Punkally Creek\nGammaproteobacteria_bacterium_nPCRbin5', latitude: -36.2319047, longitude: 150.0712607},
+ {title: 'Australia: Erskine River\nGammaproteobacteria_bacterium_nER1bin10', latitude: -38.53488, longitude: 143.9771079},
+ {title: 'USA: Badwater Basin California\nEctothiorhodospiraceae_bacterium_BW-2', latitude: 36.29256785, longitude: -117.1988521},
+ {title: 'China: Innermogolia\nOligoflexia_bacterium_nW3bin19', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Innermogolia\nOligoflexia_bacterium_nN3bin31', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Innermogolia\nOligoflexia_bacterium_nN3bin16', latitude: 41.5819857, longitude: 109.2005288},
+ {title: 'China: Qinghai, Keluke Lake\nOligoflexia_bacterium_nKLKbin5', latitude: 37.289255, longitude: 96.8595345},
+ {title: 'China: Qinghai, Keluke Lake\nOligoflexia_bacterium_nKLKbin12', latitude: 37.289255, longitude: 96.8595345},
+ {title: 'China: Hongan\nOligoflexales_bacterium_nHA4bin4', latitude: 31.292127, longitude: 114.918476},
+ {title: 'Australia: Painkalac Creek\nZetaproteobacteria_bacterium_PCbin4', latitude: -38.4660057, longitude: 144.0924743},
+ {title: 'Australia: Painkalac Creek\nZetaproteobacteria_bacterium_nPCbin1', latitude: -38.4660057, longitude: 144.0924743}]
+
+
+for (var i = 0; i < cities.length; i++) {
+var city = cities[i];
+addCity(city.longitude, city.latitude, city.title);
+}
+
+function addCity(longitude, latitude, title) {
+pointSeries.data.push({
+  geometry: { type: "Point", coordinates: [longitude, latitude] },
+  title: title
+});
+}
+
+// Rotate animation
+chart.animate({
+key: "rotationX",
+from: 0,
+to: 360,
+duration: 30000,
+loops: Infinity
+});
+
+
+// Make stuff animate on load
+chart.appear(1000, 100);
+</script>
+
 {% endblock content %}

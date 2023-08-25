@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+    /* Remove default bullets */
+    ul, #treeview {
+      list-style-type: none;
+    }
+    
+    .genome {
+        color: blue;
+        font-weight: bold;
+    }
+
+    #treediv {
+        margin-left: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    span {
+      font-size: medium;
+    }
+    /* Remove margins and padding from the parent ul */
+    #treeview {
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Style the caret/arrow */
+    .caret {
+      cursor: pointer;
+      user-select: none; /* Prevent text selection */
+    }
+    
+    /* Create the caret/arrow with a unicode, and style it */
+    .caret::before {
+      content: "\1F782";
+      color: rgb(0, 0, 0);
+      display: inline-block;
+      margin-right: 10px;
+      
+    }
+    
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .caret-down::before {
+      transform: rotate(90deg);
+    }
+    
+    /* Hide the nested list */
+    .nested {
+      display: none;
+    }
+    
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .active {
+      display: block;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card text-dark bg-light shadow-lg bg-body rounded">
+        <div class="card-header" id="cardHeader">
+            Taxa
+        </div>
+        <div class="card-body">
+            <div id="treediv">
+                <ul id="treeview"></ul>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="myModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">External Links</h5>
+            </div>
+            <div class="modal-body d-flex justify-content-evenly">
+                <button type="button" class="btn btn-primary" style="background-color: #20558a;">NCBI</button>
+                <button type="button" class="btn btn-success" style="background-color: rgb(90, 104, 85);">GTDB</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+
+<script>
+    document.body.onload = createTreeview;
+
+    function createTreeview() {
+        const root = document.querySelector("#treeview")
+
+        fetch('/static/taxa_json.json')
+        .then((response) => response.json())
+        .then((json) => {
+            genTree(json, root);
+            // root.querySelector('span').click();
+        });
+    }
+    
+    function genTree(data, root) {
+        if (Array.isArray(data)) {
+            data = data.reduce((a,v) => ({...a, [v]: 0}), {})
+        }
+        for (let i in data) {
+            const li = document.createElement('li')
+            const span = document.createElement('span')
+            const ul = document.createElement('ul')
+            const button = document.createElement('button')
+            span.innerText = i
+            span.className = 'caret'
+            ul.className = 'nested'
+            root.appendChild(li)
+
+            children = data[i]
+            if (children) {
+                li.appendChild(span)
+                li.appendChild(ul)
+                genTree(children, ul)
+            } else {
+                li.appendChild(button)
+                button.setAttribute('type',"button" )
+                button.setAttribute('class',"btn mb-1 genome" )
+                button.setAttribute('data-bs-toggle',"modal" )
+                button.setAttribute('data-bs-target',"#myModal" )
+                button.setAttribute('style',"backgroud-color:white" )
+                button.innerText = i
+            }
+            
+            span.addEventListener("click", function() {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            })
+        }
+    }
+
+</script>
+
+{% endblock content %}
