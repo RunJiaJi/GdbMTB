@@ -11,9 +11,19 @@
     </div>
 </div>
 <script>
+    function getParam(param){
+        return new URLSearchParams(window.location.search).get(param);
+    }
+
     let table = new DataTable('#myTable', {scrollX: 1000,});
 //     let search_lable = document.querySelector('#myTable_filter').querySelector('label')
 //     let labletext = search_lable.innerHTML.replace('Search:', 'Filter:')
 //     search_lable.innerHTML=labletext
+    let kw = getParam("search")
+    if (kw) {
+        table.search(kw)
+        table.draw()
+    }
+    
 </script>
 {% endblock content %}

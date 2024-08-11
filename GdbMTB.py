@@ -3,16 +3,23 @@ import pandas as pd
 from BrowserTableGenerator import BrowserTableGenerator
 app = Flask(__name__)
 
-meta_df=pd.read_csv('./data/MTB_genomes_metadata_202308.tsv', sep='\t')
+meta_df=pd.read_csv('./data/MTB_348_metadata_all_PRIVATE.csv')
 tablTables = BrowserTableGenerator(meta_df)
 
-with open('data/Tree_of_MTB.svg')as f:
+with open('data/Tree_of_MTB_.svg')as f:
     treeSVG=f.read()
 
-cities="""[{title: 'Sweden: Oskarshamn\nUncultured_microorganism_SbSrfc_SA12_01_D19', latitude: 57.4354483, longitude: 16.6691272},
- {title: 'USA: Nevada\nOmnitrophica_bacterium_SCGC_AG-290-C17', latitude: 37.1312714, longitude: -116.8425033},
- {title: 'Greece: Etoliko Lagoon\nRhodospirillaceae_bacterium_MAG_01419_mvb_30', latitude: 38.4884872, longitude: 21.2875175},
- {title: 'USA: Sakinaw Lake\nLatescibacteria_bacterium_SCGC_AAA252-B13', latitude: 49.95898915, longitude: -123.8279332},]"""
+cities = []
+
+locs=meta_df['Geographic location'].tolist()
+gNames=meta_df['Organism Name'].tolist()
+lats=meta_df['latitude'].tolist()
+longs=meta_df['longitude'].tolist()
+
+for idx in range(len(gNames)):
+    ele = {'title':locs[idx]+'\n'+gNames[idx], 'latitude':lats[idx], 'longitude':longs[idx]}
+    cities.append(ele)
+
 
 @app.route("/")
 @app.route("/home")
