@@ -1,3 +1,31 @@
+def resolve_externalLinks(meta_df):
+	accs = meta_df.Accession.tolist()
+	exLink1s = []
+	exLink2s = []
+	for acc in accs:
+		if acc.startswith('GCA'):
+			exLink1 = f'<a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{acc}">NCBI</a>'
+			exLink2 = f'<a href="https://gtdb.ecogenomic.org/genome?gid={acc}">GTDB</a>'
+		elif acc.startswith('IMG'):
+			acc = acc.replace("IMG_","")
+			exLink1 = f'<a href="https://genome.jgi.doe.gov/portal/?core=genome&query={acc}&searchIn=Anything">JGI</a>'
+			exLink2 = '-'
+		elif acc.startswith('LMSG'):
+			exLink1 = f'<a href="https://www.biosino.org/elmsg/search?keyword={acc}">eLMSG</a>'
+			exLink2 = '-'
+		elif acc.startswith('LO'):
+			exLink1 = f'<a href="https://www.ebi.ac.uk/ena/browser/view/{acc}">ENA</a>'
+			exLink2 = '-'
+		else:
+			exLink1 = '-'
+			exLink2 = '-'
+		exLink1s.append(exLink1)
+		exLink2s.append(exLink2)
+
+	meta_df['External link 1'] = exLink1s
+	meta_df['External link 2'] = exLink2s
+	return meta_df
+
 
 def BrowserTableGenerator(meta_df):
     colFea = ['Accession',
@@ -24,7 +52,7 @@ def BrowserTableGenerator(meta_df):
             'pass.GUNC'
             ]
     # colClassi = ['Assembly accession','Name','NCBI taxonomy', 'GTDB taxonomy (r214)', 'External link 1','External link 2',]
-    colClassi = ['Accession', 'Organism Name', 'GTDB_r220_classification']
+    colClassi = ['Accession', 'Organism Name', 'GTDB_r220_classification', 'External link 1','External link 2']
     colRefere = ['Accession',
             'Organism Name',
             'Bioproject accession',

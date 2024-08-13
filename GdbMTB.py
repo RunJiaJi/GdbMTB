@@ -1,9 +1,11 @@
 from flask import Flask, render_template, url_for
 import pandas as pd
-from BrowserTableGenerator import BrowserTableGenerator
+from BrowserTableGenerator import resolve_externalLinks, BrowserTableGenerator
+
 app = Flask(__name__)
 
-meta_df=pd.read_csv('./data/MTB_348_metadata_all_PRIVATE.csv')
+meta_df = pd.read_csv('./data/MTB_348_metadata_all_PRIVATE.csv')
+meta_df = resolve_externalLinks(meta_df)
 tablTables = BrowserTableGenerator(meta_df)
 
 with open('data/Tree_of_MTB_.svg')as f:
@@ -19,7 +21,6 @@ longs=meta_df['longitude'].tolist()
 for idx in range(len(gNames)):
     ele = {'title':locs[idx]+'\n'+gNames[idx], 'latitude':lats[idx], 'longitude':longs[idx]}
     cities.append(ele)
-
 
 @app.route("/")
 @app.route("/home")
