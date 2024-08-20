@@ -92,15 +92,11 @@
 <script>
     document.body.onload = createTreeview;
 
-    function createTreeview() {
-        const root = document.querySelector("#treeview")
+    const treeData = {{ tree_json | safe }};
 
-        fetch('/static/taxa_json.json')
-        .then((response) => response.json())
-        .then((json) => {
-            genTree(json, root);
-            // root.querySelector('span').click();
-        });
+    function createTreeview() {
+        const root = document.querySelector("#treeview");
+        genTree(treeData, root);
     }
     
     function genTree(data, root) {

@@ -15,6 +15,22 @@ def parse_classification(data):
         node = add_to_tree(root, taxa_list)
         node['genomes'] = node.get('genomes', []) + [genome]
     
-    return root
+    tree_json = json.dumps(root, indent=4)
+    return tree_json
+
+def get_data(meta_df):
+    data={}
+
+    idList = meta_df.ID.tolist()
+    taxaList = meta_df['GTDB_r220_classification'].tolist()
+
+    for i, j in zip(idList, taxaList):
+        data[i]=j
+    return data
+
+def build_tree(meta_df):
+    data = get_data(meta_df)
+    tree_json = parse_classification(data)
+    return tree_json
 
 
