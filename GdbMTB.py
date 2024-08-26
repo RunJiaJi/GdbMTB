@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for
 import pandas as pd
 from BrowserTableGenerator import resolve_externalLinks, BrowserTableGenerator
-from get_json import build_tree
+from get_json import build_tree, get_external_links
 
 app = Flask(__name__)
 
@@ -30,6 +30,7 @@ for idx in range(len(gNames)):
 
 # 5. generate the nested taxa tree
 tree_json = build_tree(meta_df)
+idToExternalLink = get_external_links(meta_df)
 
 @app.route("/")
 @app.route("/home")
@@ -58,7 +59,7 @@ def browser_mgc():
 
 @app.route("/tree-taxa")
 def tree_taxa():
-    return render_template('tree-taxa.html', title='Tree', tree_json = tree_json)
+    return render_template('tree-taxa.html', title='Tree', tree_json = tree_json, idToExternalLink=idToExternalLink)
 
 @app.route("/tree-tree")
 def tree_tree():

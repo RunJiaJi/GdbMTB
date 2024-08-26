@@ -20,7 +20,13 @@
 
     span {
       font-size: medium;
+      background-color: beige;
     }
+
+    li {
+        margin-top: 5px;
+    }
+
     /* Remove margins and padding from the parent ul */
     #treeview {
       margin: 0;
@@ -56,6 +62,21 @@
     .active {
       display: block;
     }
+
+    .count {
+        background-color: rgb(227, 227, 227); 
+        border-color: rgb(0, 0, 0);
+        border-radius: 0.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        margin-left: 10px;
+        color: black;
+        font-weight: bold;
+    }
+
+    #externalLinkPanel a {
+        font-weight: bold;
+    }
 </style>
 
 <div class="container mt-4">
@@ -71,15 +92,15 @@
         </div>
     </div>
 
-    <div id="myModal" class="modal" tabindex="-1">
+    <div id="externalLinkModal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">External Links</h5>
             </div>
-            <div class="modal-body d-flex justify-content-evenly">
-                <button type="button" class="btn btn-primary" style="background-color: #20558a;">NCBI</button>
-                <button type="button" class="btn btn-success" style="background-color: rgb(90, 104, 85);">GTDB</button>
+            <div class="modal-body d-flex justify-content-evenly" id="externalLinkPanel">
+                <!-- <button type="button" class="btn btn-primary" style="background-color: #20558a;">NCBI</button>
+                <button type="button" class="btn btn-success" style="background-color: rgb(90, 104, 85);">GTDB</button> -->
             </div>
             </div>
         </div>
@@ -93,10 +114,12 @@
     document.body.onload = createTreeview;
 
     const treeData = {{ tree_json | safe }};
+    const exLinks = {{ idToExternalLink | safe }};
 
     function createTreeview() {
         const root = document.querySelector("#treeview");
         genTree(treeData, root);
+        writeCount();
     }
     
     function genTree(data, root) {
@@ -108,24 +131,36 @@
             const span = document.createElement('span')
             const ul = document.createElement('ul')
             const button = document.createElement('button')
+            const numCount = document.createElement('a')
+
             span.innerText = i
             span.className = 'caret'
             ul.className = 'nested'
+            numCount.className = 'count'
+            numCount.href = "/browser/classification?search="+i
+            numCount.target = '_blank'
             root.appendChild(li)
 
-            children = data[i]
+            const children = data[i];
             if (children) {
                 li.appendChild(span)
+                li.appendChild(numCount)
                 li.appendChild(ul)
                 genTree(children, ul)
             } else {
                 li.appendChild(button)
                 button.setAttribute('type',"button" )
                 button.setAttribute('class',"btn mb-1 genome" )
-                button.setAttribute('data-bs-toggle',"modal" )
-                button.setAttribute('data-bs-target',"#myModal" )
+                // button.setAttribute('data-bs-toggle',"modal" )
+                // button.setAttribute('data-bs-target',"#myModal" )
                 button.setAttribute('style',"backgroud-color:white" )
                 button.innerText = i
+                button.onclick = () => {
+                    const modal = new bootstrap.Modal(document.getElementById('externalLinkModal'))
+                    const panel = document.querySelector("#externalLinkPanel");
+                    panel.innerHTML = exLinks[i].join("\n");
+                    modal.toggle();
+                }
             }
             
             span.addEventListener("click", function() {
@@ -134,6 +169,14 @@
             })
         }
     }
+
+    function writeCount() {
+        const taxaLabelList = document.querySelectorAll("li:has(> a.count)");
+        taxaLabelList.forEach((item) => {
+            item.querySelector("a.count").innerText = item.querySelectorAll("button").length;
+        });
+    }
+
 
 </script>
 
