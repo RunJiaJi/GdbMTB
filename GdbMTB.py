@@ -6,7 +6,7 @@ from get_json import build_tree, get_external_links
 app = Flask(__name__)
 
 # 1. read the metadata table
-meta_df = pd.read_csv('./data/MTB_348_metadata_all_PRIVATE.csv')
+meta_df = pd.read_csv('./data/MTB_365_metadata_all_PRIVATE.csv')
 
 # 2. generate the browser tables
 meta_df = resolve_externalLinks(meta_df)
@@ -31,6 +31,19 @@ for idx in range(len(gNames)):
 # 5. generate the nested taxa tree
 tree_json = build_tree(meta_df)
 idToExternalLink = get_external_links(meta_df)
+
+# 6. read the diversity plot
+with open('static/figure/Fig1_phyla_history_plot.svg')as f:
+    diversitySVG=f.read()
+
+# 7. read the feature plot
+with open('static/figure/Fig2_quality_scatter_plot.svg') as f:
+    feaSVG = f.read()
+
+# 8. read the distribution map plot
+with open('static/figure/Fig3_Map_with_different_env.svg') as f:
+    disSVG = f.read()
+
 
 @app.route("/")
 @app.route("/home")
@@ -67,7 +80,7 @@ def tree_tree():
 
 @app.route("/statistics")
 def statistics():
-    return render_template('statistics.html', title='Statistics')
+    return render_template('statistics.html', title='Statistics', diversitySVG=diversitySVG, feaSVG=feaSVG, disSVG=disSVG)
 
 @app.route("/downloads")
 def download():

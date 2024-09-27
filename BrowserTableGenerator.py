@@ -4,17 +4,17 @@ def resolve_externalLinks(meta_df):
 	exLink2s = []
 	for acc in accs:
 		if acc.startswith('GCA'):
-			exLink1 = f'<a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{acc}">NCBI</a>'
-			exLink2 = f'<a href="https://gtdb.ecogenomic.org/genome?gid={acc}">GTDB</a>'
+			exLink1 = f'<a href="https://www.ncbi.nlm.nih.gov/datasets/genome/{acc}" target="_blank">NCBI</a>'
+			exLink2 = f'<a href="https://gtdb.ecogenomic.org/genome?gid={acc}" target="_blank">GTDB</a>'
 		elif acc.startswith('IMG'):
 			acc = acc.replace("IMG_","")
-			exLink1 = f'<a href="https://genome.jgi.doe.gov/portal/?core=genome&query={acc}&searchIn=Anything">JGI</a>'
+			exLink1 = f'<a href="https://genome.jgi.doe.gov/portal/?core=genome&query={acc}&searchIn=Anything" target="_blank">JGI</a>'
 			exLink2 = '-'
 		elif acc.startswith('LMSG'):
-			exLink1 = f'<a href="https://www.biosino.org/elmsg/search?keyword={acc}">eLMSG</a>'
+			exLink1 = f'<a href="https://www.biosino.org/elmsg/search?keyword={acc}" target="_blank">eLMSG</a>'
 			exLink2 = '-'
 		elif acc.startswith('LO'):
-			exLink1 = f'<a href="https://www.ebi.ac.uk/ena/browser/view/{acc}">ENA</a>'
+			exLink1 = f'<a href="https://www.ebi.ac.uk/ena/browser/view/{acc}" target="_blank">ENA</a>'
 			exLink2 = '-'
 		else:
 			exLink1 = '-'
