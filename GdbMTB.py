@@ -13,7 +13,7 @@ meta_df = resolve_externalLinks(meta_df)
 tablTables = BrowserTableGenerator(meta_df)
 
 # 3. read the tree of MTB
-with open('data/Tree_of_MTB_.svg')as f:
+with open('data/1_tree_from_iTOL_for_website.svg')as f:
     treeSVG=f.read()
 
 # 4. resolve the geographical locs and generate cities list
