@@ -44,11 +44,32 @@ with open('static/figure/Fig2_quality_scatter_plot.svg') as f:
 with open('static/figure/Fig3_Map_with_different_env.svg') as f:
     disSVG = f.read()
 
+# 9. read the number of genomes
+num_genomes = len(meta_df)
+
+# 10. get the 10 most recent scientific papers
+recent_papers = meta_df[['Title', 'Author', 'DOI', 'Journal', 'Publish_date']].copy()
+
+# Filter out papers with missing or empty titles
+recent_papers = recent_papers.dropna(subset=['Title', 'Publish_date'])
+recent_papers = recent_papers[recent_papers['Title'].str.strip() != '']  # Remove empty titles
+recent_papers = recent_papers[recent_papers['Title'] != '-']  # Remove placeholder titles
+
+# Remove duplicates and get the 10 most recent
+recent_papers = recent_papers.drop_duplicates(subset=['Title'])
+recent_papers = recent_papers.sort_values('Publish_date', ascending=False).head(10)
+recent_papers_list = recent_papers.to_dict('records')
+
+# Debug: Print the papers being selected
+print(f"Number of papers selected: {len(recent_papers_list)}")
+for i, paper in enumerate(recent_papers_list):
+    print(f"Paper {i+1}: {paper['Title'][:50]}... ({paper['Publish_date']})")
+
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', cities=cities)
+    return render_template('home.html', cities=cities, num_genomes=num_genomes, recent_papers=recent_papers_list)
 
 @app.route("/browser/QualityandFeature")
 def browser_fea():
