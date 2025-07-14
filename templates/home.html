@@ -17,44 +17,18 @@
 <div class="container-fluid" style="height: 90vh;">
   <div class="d-flex flex-row justify-content-evenly align-items-center h-100">
     <div id="chartdiv" style="width: 50%;"></div>
-    <div class="container mt-4 d-flex flex-column align-items-center justify-content-center" style="width: 50%; height: 100%; position: relative;">
-      
-      {% if num_genomes %}
-      <div class="text-center w-100 mb-3 py-2 px-3 rounded" role="alert" style="font-size: 1rem; border: 0.8px solid #000; background: rgba(33, 37, 41, 0.85); color: #ffffff;">
-        <strong>GdbMTB now (June 2024) includes <a href="/downloads" style="color: #ffc107; text-decoration: underline;">{{ num_genomes }} MTB genomes</a>! 🎉🎉</strong>
-      </div>
-      {% endif %}
-      
+    <div class="container mt-4 d-flex align-items-center justify-content-center " style="width: 50%; height: 100%; position: relative;">
       <div class="card text-black bg-light shadow-lg rounded p-2" style="height: 60%; width: 100%;">
-        <!-- <div class="card-body d-flex flex-column justify-content-center"> -->
-          <h5 class="text-center mb-3" style="font-weight: bold; color: #333;">Recent Publications</h5>
-          <div class="papers-container" style="height: calc(100% - 60px); overflow: hidden; position: relative; border-radius: 8px; background: rgba(255,255,255,0.1);">
-            <div class="papers-scroll" id="papersScroll" style="position: relative; padding: 10px;">
-              {% for paper in recent_papers %}
-              <div class="paper-item mb-3 p-2 border-start border-3 border-primary" style="background: rgba(255,255,255,0.9); border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <div class="paper-title" style="font-weight: 600; font-size: 0.9rem; color: #2c3e50; margin-bottom: 0.3rem;">
-                  {{ paper.Title }}
-                </div>
-                <div class="paper-authors" style="font-size: 0.8rem; color: #7f8c8d; margin-bottom: 0.2rem;">
-                  {{ paper.Author }}
-                </div>
-                <div class="paper-journal" style="font-size: 0.75rem; color: #95a5a6; font-style: italic;">
-                  {{ paper.Journal }} ({{ paper.Publish_date }})
-                </div>
-                {% if paper.DOI %}
-                <div class="paper-doi" style="font-size: 0.7rem;">
-                  <a href="https://doi.org/{{ paper.DOI }}" target="_blank" style="color: #3498db; text-decoration: none;">
-                    DOI: {{ paper.DOI }}
-                  </a>
-                </div>
-                {% endif %}
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        <!-- </div> -->
+        <div class="card-body d-flex flex-column justify-content-center">
+          <!-- <img src="/static/figure/rect8364_.svg" class="img-fluid" alt="..."> -->
+          <h4 class="text-center"><span class="text-decoration-underline">G</span>enomic <span class="text-decoration-underline">d</span>ata<span class="text-decoration-underline">b</span>ase of <span class="text-decoration-underline">M</span>agneto<span class="text-decoration-underline">t</span>actic <span class="text-decoration-underline">B</span>acteria</h4>
+          <h3 class="text-center" style="font-weight: bold;">GdbMTB</h3>
+
+        </div>
       </div>
     </div>    
+               
+    </div>
   </div>
 </div>
 
@@ -201,114 +175,6 @@ loops: Infinity
 
 // Make stuff animate on load
 chart.appear(1000, 100);
-
-// Auto-scroll papers
-function autoScrollPapers() {
-  const papersScroll = document.getElementById('papersScroll');
-  const papersContainer = document.querySelector('.papers-container');
-  if (!papersScroll) return;
-  
-  // Clone the content for seamless looping
-  const originalContent = papersScroll.innerHTML;
-  papersScroll.innerHTML = originalContent + originalContent;
-  
-  let translateY = 0;
-  const scrollSpeed = 0.75; // pixels per frame (1.5x faster than before)
-  const scrollInterval = 30; // milliseconds between frames
-  let isScrolling = true;
-  let scrollIntervalId = null;
-  
-  // Drag functionality variables
-  let isDragging = false;
-  let startY = 0;
-  let startTranslateY = 0;
-  
-  function scroll() {
-    if (!isScrolling || isDragging) return;
-    
-    translateY -= scrollSpeed;
-    
-    // Reset when reaching halfway (since we duplicated the content)
-    const maxTranslate = -(papersScroll.scrollHeight / 2);
-    if (translateY <= maxTranslate) {
-      translateY = 0;
-    }
-    
-    papersScroll.style.transform = `translateY(${translateY}px)`;
-  }
-  
-  function startScrolling() {
-    if (!scrollIntervalId) {
-      scrollIntervalId = setInterval(scroll, scrollInterval);
-    }
-  }
-  
-  function stopScrolling() {
-    if (scrollIntervalId) {
-      clearInterval(scrollIntervalId);
-      scrollIntervalId = null;
-    }
-  }
-  
-  // Mouse down event for drag start
-  papersContainer.addEventListener('mousedown', function(e) {
-    isDragging = true;
-    isScrolling = false;
-    startY = e.clientY;
-    startTranslateY = translateY;
-    papersContainer.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-  
-  // Mouse move event for dragging
-  document.addEventListener('mousemove', function(e) {
-    if (!isDragging) return;
-    
-    const deltaY = e.clientY - startY;
-    translateY = startTranslateY + deltaY;
-    
-    // Keep within bounds
-    const maxTranslate = -(papersScroll.scrollHeight / 2);
-    if (translateY > 0) translateY = 0;
-    if (translateY < maxTranslate) translateY = maxTranslate;
-    
-    papersScroll.style.transform = `translateY(${translateY}px)`;
-  });
-  
-  // Mouse up event for drag end
-  document.addEventListener('mouseup', function() {
-    if (isDragging) {
-      isDragging = false;
-      isScrolling = true;
-      papersContainer.style.cursor = 'grab';
-    }
-  });
-  
-  // Pause on hover (only when not dragging)
-  papersContainer.addEventListener('mouseenter', function() {
-    if (!isDragging) {
-      isScrolling = false;
-    }
-  });
-  
-  // Resume on mouse leave (only when not dragging)
-  papersContainer.addEventListener('mouseleave', function() {
-    if (!isDragging) {
-      isScrolling = true;
-    }
-  });
-  
-  // Set initial cursor style
-  papersContainer.style.cursor = 'grab';
-  
-  // Start scrolling after a short delay to ensure DOM is ready
-  setTimeout(startScrolling, 500);
-}
-
-// Start auto-scrolling when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  autoScrollPapers();
-});
 </script>
 
 {% endblock content %}
