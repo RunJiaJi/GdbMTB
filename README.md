@@ -39,7 +39,7 @@ Genomes and Metadata: Archived in **Zenodo**[![DOI](https://zenodo.org/badge/DOI
 ## Citation
 If you use data from GdbMTB or scripts from this repository in your research, please cite:
 
-Ji Runjia, Pan Yongxin, Lin Wei. 2026. GdbMTB: a manually curated genomic database of magnetotactic bacteria. Database [J], DOI: 10.1093/database/baaf090.
+Ji Runjia, Pan Yongxin, Lin Wei. 2026. GdbMTB: a manually curated genomic database of magnetotactic bacteria. Database [J], 2026:baaf090. DOI: [10.1093/database/baaf090](https://doi.org/10.1093/database/baaf090).
 
 ## Contact
 For inquiries and advices, contact: jirunjia@gmail.com
