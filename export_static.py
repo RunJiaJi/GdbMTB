@@ -9,7 +9,7 @@ standalone directory (default: 'docs/') ready for GitHub Pages.
 
 Usage:
 ------
-# 1. Export for GitHub Pages (default: base path '/MTBdatabase', output 'docs')
+# 1. Export for GitHub Pages (default: base path '/GdbMTB', output 'docs')
 python export_static.py
 
 # 2. Export for custom domain or root domain (e.g. www.gdbmtb.cn or username.github.io)
@@ -121,7 +121,7 @@ def generate_404_html(base_path: str) -> str:
 """
 
 
-def export_site(base_path: str = '/MTBdatabase', output_dir: str = 'docs'):
+def export_site(base_path: str = '/GdbMTB', output_dir: str = 'docs'):
     """Renders all Flask routes to static HTML and copies static assets."""
     print("=" * 60)
     print("  GdbMTB Static Site Exporter")
@@ -223,8 +223,8 @@ def main():
     parser.add_argument(
         '--base-path',
         type=str,
-        default='/MTBdatabase',
-        help="Base path URL for GitHub Pages (e.g. '/MTBdatabase', or '' for custom/root domain)."
+        default='/GdbMTB',
+        help="Base path URL for GitHub Pages (e.g. '/GdbMTB', or '' for custom/root domain)."
     )
     parser.add_argument(
         '--output',
