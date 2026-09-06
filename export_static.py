@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-GdbMTB Static Site Generator for GitHub Pages & Static Hosting
-==============================================================
+GdbMTB Static Site Generator for GitHub Pages & Offline Browsing
+================================================================
 
 This script exports all dynamic Flask routes into pre-rendered static HTML
 files and bundles all static assets (CSS, JS, SVGs, images, PDF) into a
-standalone directory (default: 'docs/') ready for GitHub Pages.
+standalone directory (default: 'docs/') ready for:
+1. GitHub Pages (https://RunJiaJi.github.io/GdbMTB/)
+2. Local offline browsing (directly double-clicking index.html)
+3. Any local or remote static web server
 
 Usage:
 ------
-# 1. Export for GitHub Pages (default: base path '/GdbMTB', output 'docs')
+# 1. Export static site using relative paths (Recommended: works everywhere, locally and on GitHub Pages)
 python export_static.py
 
-# 2. Export for custom domain or root domain (e.g. www.gdbmtb.cn or username.github.io)
-python export_static.py --base-path ""
-
-# 3. Export and immediately launch a local preview server
+# 2. Export and immediately preview in your browser on http://localhost:8000
 python export_static.py --serve
+
+# 3. Export with root-absolute paths if desired
+python export_static.py --mode absolute --base-path /GdbMTB
 """
 
 import os
@@ -59,74 +62,119 @@ INTERNAL_NAV_ROUTES = [
 ]
 
 
-def adjust_links(html_content: str, base_path: str) -> str:
+def compute_rel_root(target_file_rel_path: str) -> str:
     """
-    Adjust absolute paths in HTML to support GitHub Pages project subpaths
-    (e.g., /MTBdatabase/) or custom root domains.
+    Computes the relative path prefix back to the site root directory.
+    E.g.:
+      'index.html'                         -> '.'
+      'about/index.html'                   -> '..'
+      'browser/QualityandFeature/index.html' -> '../..'
+      'browser/QualityandFeature.html'     -> '..'
     """
-    prefix = '/' + base_path.strip('/') if base_path.strip('/') else ''
+    dir_name = os.path.dirname(target_file_rel_path).replace('\\', '/').strip('/')
+    if not dir_name or dir_name == '.':
+        return '.'
+    parts = [p for p in dir_name.split('/') if p]
+    return '/'.join(['..'] * len(parts))
 
-    # 1. Adjust static asset URLs (CSS, JS, images, iframes, favicon)
-    # Match href="/static/... or src="/static/... or url('/static/...
-    if prefix:
-        html_content = re.sub(r'href=["\']/static/+', f'href="{prefix}/static/', html_content)
-        html_content = re.sub(r'src=["\']/static/+', f'src="{prefix}/static/', html_content)
-        html_content = re.sub(r'url\(["\']?/static/+', f'url("{prefix}/static/', html_content)
-    else:
-        html_content = re.sub(r'href=["\']/static/+', 'href="/static/', html_content)
-        html_content = re.sub(r'src=["\']/static/+', 'src="/static/', html_content)
-        html_content = re.sub(r'url\(["\']?/static/+', 'url("/static/', html_content)
-    
-    # 2. Adjust internal navigation links in navbar and page content
-    for route in INTERNAL_NAV_ROUTES:
-        # Match href="/route" or href="/route/"
+
+def adjust_links(html_content: str, target_file: str, mode: str = 'relative', base_path: str = '/GdbMTB') -> str:
+    """
+    Adjusts paths in HTML to support either relative paths (works locally & GitHub Pages)
+    or root-based absolute paths.
+    """
+    if mode == 'relative':
+        rel_root = compute_rel_root(target_file)
+        
+        # 1. Adjust static asset URLs (CSS, JS, images, iframes, favicon)
+        # Match href="/static/..., src="/static/..., url('/static/...
+        html_content = re.sub(r'href=["\']/+(?:GdbMTB/)?static/+', f'href="{rel_root}/static/', html_content)
+        html_content = re.sub(r'src=["\']/+(?:GdbMTB/)?static/+', f'src="{rel_root}/static/', html_content)
+        html_content = re.sub(r'url\(["\']?/+(?:GdbMTB/)?static/+', f'url("{rel_root}/static/', html_content)
+
+        # 2. Adjust internal navigation links in navbar and page content
+        for route in INTERNAL_NAV_ROUTES:
+            # Match href="/route" or href="/route/" or href="/GdbMTB/route/..."
+            html_content = re.sub(
+                rf'href=["\']/+(?:GdbMTB/)?{route}(?:/index\.html|/)?(["\'])',
+                rf'href="{rel_root}/{route}/index.html\1',
+                html_content
+            )
+
+        # 3. Adjust home / navbar-brand link: href="/" or href="/GdbMTB/"
+        html_content = re.sub(r'href=["\']/+(?:GdbMTB/)?["\']', f'href="{rel_root}/index.html"', html_content)
+
+        # 4. Adjust JavaScript dynamic links (in tree-taxa.html and statistics.html)
         html_content = re.sub(
-            rf'href=["\']/{route}(/)?(["\'])',
-            rf'href="{prefix}/{route}/\2',
+            r'["\']/+(?:GdbMTB/)?browser/classification/?\?search=["\']',
+            f'"{rel_root}/browser/classification/index.html?search="',
             html_content
         )
 
-    # 3. Adjust home / navbar-brand link: href="/"
-    html_content = re.sub(r'href=["\']/["\']', f'href="{prefix}/"', html_content)
+    else:
+        # Absolute mode
+        prefix = '/' + base_path.strip('/') if base_path.strip('/') else ''
 
-    # 4. Adjust JavaScript dynamic links (in tree-taxa.html and statistics.html)
-    html_content = html_content.replace(
-        '"/browser/classification?search="',
-        f'"{prefix}/browser/classification/?search="'
-    )
+        html_content = re.sub(r'href=["\']/+(?:GdbMTB/)?static/+', f'href="{prefix}/static/', html_content)
+        html_content = re.sub(r'src=["\']/+(?:GdbMTB/)?static/+', f'src="{prefix}/static/', html_content)
+        html_content = re.sub(r'url\(["\']?/+(?:GdbMTB/)?static/+', f'url("{prefix}/static/', html_content)
+
+        for route in INTERNAL_NAV_ROUTES:
+            html_content = re.sub(
+                rf'href=["\']/+(?:GdbMTB/)?{route}(?:/index\.html|/)?(["\'])',
+                rf'href="{prefix}/{route}/\1',
+                html_content
+            )
+
+        html_content = re.sub(r'href=["\']/+(?:GdbMTB/)?["\']', f'href="{prefix}/"', html_content)
+
+        html_content = re.sub(
+            r'["\']/+(?:GdbMTB/)?browser/classification/?\?search=["\']',
+            f'"{prefix}/browser/classification/?search="',
+            html_content
+        )
 
     return html_content
 
 
-def generate_404_html(base_path: str) -> str:
-    """Generate a clean 404 page for GitHub Pages."""
+def generate_404_html(base_path: str = '/GdbMTB') -> str:
+    """Generate a clean 404 page that works for both GitHub Pages and local servers."""
     prefix = '/' + base_path.strip('/') if base_path.strip('/') else ''
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Page Not Found - GdbMTB</title>
-  <meta http-equiv="refresh" content="3;url={prefix}/">
-  <link rel="stylesheet" href="{prefix}/static/dist/css/bootstrap.min.css">
+  <script>
+    var path = window.location.pathname;
+    if (path.indexOf('{prefix}') === 0) {{
+      setTimeout(function() {{ window.location.href = '{prefix}/'; }}, 2000);
+    }} else {{
+      setTimeout(function() {{ window.location.href = './index.html'; }}, 2000);
+    }}
+  </script>
+  <link rel="stylesheet" href="./static/dist/css/bootstrap.min.css">
 </head>
 <body class="bg-light d-flex align-items-center" style="min-height: 100vh;">
   <div class="container text-center py-5">
     <h1 class="display-1 text-muted">404</h1>
     <h2>Page Not Found</h2>
-    <p class="lead">The requested page could not be located. Redirecting to <a href="{prefix}/">GdbMTB Home</a> in 3 seconds...</p>
-    <a href="{prefix}/" class="btn btn-primary mt-3">Back to Home</a>
+    <p class="lead">The requested page could not be located. Redirecting to home page...</p>
+    <a href="./index.html" class="btn btn-primary mt-3">Back to Home</a>
   </div>
 </body>
 </html>
 """
 
 
-def export_site(base_path: str = '/GdbMTB', output_dir: str = 'docs'):
+def export_site(mode: str = 'relative', base_path: str = '/GdbMTB', output_dir: str = 'docs'):
     """Renders all Flask routes to static HTML and copies static assets."""
     print("=" * 60)
     print("  GdbMTB Static Site Exporter")
     print("=" * 60)
-    print(f"[*] Base Path  : '{base_path}'")
+    print(f"[*] Path Mode  : '{mode}' (supports local file:// and GitHub Pages)")
+    if mode == 'absolute':
+        print(f"[*] Base Path  : '{base_path}'")
     print(f"[*] Output Dir : '{output_dir}'")
     print("-" * 60)
 
@@ -149,10 +197,11 @@ def export_site(base_path: str = '/GdbMTB', output_dir: str = 'docs'):
             continue
 
         raw_html = res.data.decode('utf-8')
-        processed_html = adjust_links(raw_html, base_path)
 
         if target_path.endswith('.html'):
-            file_path = os.path.join(output_dir, target_path)
+            target_rel_file = target_path
+            processed_html = adjust_links(raw_html, target_rel_file, mode=mode, base_path=base_path)
+            file_path = os.path.join(output_dir, target_rel_file)
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(processed_html)
@@ -160,16 +209,20 @@ def export_site(base_path: str = '/GdbMTB', output_dir: str = 'docs'):
             rendered_count += 1
         else:
             # 1. Write target_path/index.html (standard directory structure)
-            dir_index_path = os.path.join(output_dir, target_path, 'index.html')
+            dir_index_rel = os.path.join(target_path, 'index.html').replace('\\', '/')
+            processed_html_dir = adjust_links(raw_html, dir_index_rel, mode=mode, base_path=base_path)
+            dir_index_path = os.path.join(output_dir, dir_index_rel)
             os.makedirs(os.path.dirname(dir_index_path), exist_ok=True)
             with open(dir_index_path, 'w', encoding='utf-8') as f:
-                f.write(processed_html)
+                f.write(processed_html_dir)
 
             # 2. Also write target_path.html (fallback for direct URL requests)
-            flat_html_path = os.path.join(output_dir, f"{target_path}.html")
+            flat_html_rel = f"{target_path}.html".replace('\\', '/')
+            processed_html_flat = adjust_links(raw_html, flat_html_rel, mode=mode, base_path=base_path)
+            flat_html_path = os.path.join(output_dir, flat_html_rel)
             os.makedirs(os.path.dirname(flat_html_path), exist_ok=True)
             with open(flat_html_path, 'w', encoding='utf-8') as f:
-                f.write(processed_html)
+                f.write(processed_html_flat)
 
             print(f"    ✓ {route:<35} -> {target_path}/index.html & {target_path}.html")
             rendered_count += 1
@@ -219,12 +272,19 @@ def serve_preview(output_dir: str = 'docs', port: int = 8000):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Export GdbMTB Flask app to static HTML for GitHub Pages.")
+    parser = argparse.ArgumentParser(description="Export GdbMTB Flask app to static HTML for GitHub Pages & Local Browsing.")
+    parser.add_argument(
+        '--mode',
+        type=str,
+        choices=['relative', 'absolute'],
+        default='relative',
+        help="Path mode: 'relative' (default, works offline/double-click AND GitHub Pages) or 'absolute'."
+    )
     parser.add_argument(
         '--base-path',
         type=str,
         default='/GdbMTB',
-        help="Base path URL for GitHub Pages (e.g. '/GdbMTB', or '' for custom/root domain)."
+        help="Base path URL when using --mode absolute (default: '/GdbMTB')."
     )
     parser.add_argument(
         '--output',
@@ -245,7 +305,7 @@ def main():
     )
 
     args = parser.parse_args()
-    export_site(base_path=args.base_path, output_dir=args.output)
+    export_site(mode=args.mode, base_path=args.base_path, output_dir=args.output)
 
     if args.serve:
         serve_preview(output_dir=args.output, port=args.port)
