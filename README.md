@@ -37,9 +37,9 @@ python scripts/use_ncbi_entrez_api_get_reference.py example_accessions.txt
 Genomes and Metadata: Archived in **Zenodo**[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14876943.svg)](https://doi.org/10.5281/zenodo.14876943) and **ScienceDB**[![ScienceDB](https://img.shields.io/badge/ScienceDB-10.57760/sciencedb.21001-blue.svg)](https://doi.org/10.57760/sciencedb.21001).
 
 ## Citation
-If you use GdbMTB or this repository in your research, please cite:
+If you use data from GdbMTB or scripts from this repository in your research, please cite:
 
-Ji, R., Pan, Y., & Lin, W. (2025). GdbMTB: A manually curated genomic database of magnetotactic bacteria. (in submission).
+Ji Runjia, Pan Yongxin, Lin Wei. 2026. GdbMTB: a manually curated genomic database of magnetotactic bacteria. Database [J], 2026:baaf090. DOI: [10.1093/database/baaf090](https://doi.org/10.1093/database/baaf090).
 
 ## Contact
 For inquiries and advices, contact: jirunjia@gmail.com
