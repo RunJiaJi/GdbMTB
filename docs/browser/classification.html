@@ -1,0 +1,2738 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MTB genomic database">
+    <meta name="author" content="jirunjia@gmail.com">
+    <title>Genomic database of MTB</title>
+
+    <link rel="stylesheet" type="text/css" href="/MTBdatabase/static/dist/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/MTBdatabase/static/brand/11.png">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    
+
+    <style>
+        .carousel-control-next,
+        .carousel-control-prev,
+        .carousel-indicators {
+          filter: invert(100%);
+        }
+        /* .carousel img {
+            width: auto;
+            height: 100%;
+        } */
+        .carousel-caption {
+            color: black;
+        }
+        .error {
+            color: red;
+        }
+        
+        #myTable_filter {
+            margin-bottom: 1rem;
+        }
+        #myTable_paginate {
+            margin-top: 0.5rem;
+            font-size:small;
+        }
+        #myTable_info {
+            margin-top: 0.5rem;
+            font-size:small;
+        }
+        #cardHeader {
+            font-size:large;
+            font-weight: bold;
+        }
+
+        #zoom {
+            width: 100%;
+            height: 100%;
+            transform-origin: 0px 0px;
+            transform: scale(1) translate(0px, 0px);
+            /* cursor: grab; */
+        }
+        div#zoom > svg {
+            width: 100%;
+            height: auto;
+        }
+        table {
+            table-layout: fixed;
+            white-space: nowrap;
+        }
+        
+    </style>
+  
+    
+        <title>GdbMTB - Browser</title>
+    
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+
+  </head>
+
+  <body>
+    <header class="d-flex flex-wrap px-3 border-bottom navbar-fixed-top bg-dark">
+        <div class="container">
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <div class="container-fluid">
+                <a class="navbar-brand" href="/MTBdatabase/">GdbMTB</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                          <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Browser
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/QualityandFeature/">Quality and feature</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/classification/">Classification</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/reference/">Reference</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/EnvironmentalMetadata/">Environmental metadata</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/MagnetosomeGeneClusters/">Magnetosome gene clusters</a></li>
+                            </ul>
+                          </li>
+                        </ul>
+                    </div>
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Tree
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="/MTBdatabase/tree-tree/">Tree</a></li>                                    
+                                    <li><a class="dropdown-item" href="/MTBdatabase/tree-taxa/">Taxa</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/statistics/">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/downloads/">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/about/">About</a>
+                    </li>
+                    </ul>
+                    
+                </div>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+
+    <main style="padding-top: 70px;">
+        
+<div class="container mt-4">
+    <div class="card text-dark bg-light shadow-lg bg-body rounded">
+        <div class="card-header" id="cardHeader">
+            Classification
+        </div>
+        <div class="card-body">
+            <table class="table table-sm table-striped table-hover table table-fluid" id="myTable">
+  <thead class="table-dark align-middle">
+    <tr style="text-align: right;">
+      <th>Accession</th>
+      <th>Organism Name</th>
+      <th>GTDB_r220_classification</th>
+      <th>External link 1</th>
+      <th>External link 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GCA_000009985.1</td>
+      <td>Paramagnetospirillum_magneticum_AMB-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum magneticum</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000009985.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000009985.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000010665.1</td>
+      <td>Solidesulfovibrio_magneticus_RS-1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Solidesulfovibrio;s__Solidesulfovibrio magneticus</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000010665.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000010665.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000014865.1</td>
+      <td>Magnetococcus_marinus_MC-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetococcaceae;g__Magnetococcus;s__Magnetococcus marinus</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000014865.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000014865.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000342045.1</td>
+      <td>Paramagnetospirillum_caucaseum_SO-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum caucaseum</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000342045.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000342045.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000478645.1</td>
+      <td>Latescibacteria_bacterium_SCGC_AAA252-B13</td>
+      <td>d__Bacteria;p__Latescibacterota;c__Latescibacteria;o__Latescibacterales;f__Latescibacteraceae;g__Latescibacter;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000478645.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000478645.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000513295.1</td>
+      <td>Magnetospirillum_gryphiswaldense_MSR-1_v2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Magnetospirillum;s__Magnetospirillum gryphiswaldense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000513295.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000513295.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000516475.1</td>
+      <td>Candidatus_Magnetoglobus_multicellularis_str._Araruama</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Magnetomoraceae;g__Magnetomorum;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000516475.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000516475.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000714715.1</td>
+      <td>Candidatus_Magnetobacterium_casense_MYR-1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium casense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000714715.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000714715.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000829825.1</td>
+      <td>Paramagnetospirillum_magnetotacticum_MS-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum magnetotacticum</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000829825.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000829825.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000954095.1</td>
+      <td>Candidatus_Omnitrophus_magneticus_SKK-01</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Tantalellales;f__Tantalellaceae;g__Omnitrophus_A;s__Omnitrophus_A magneticus</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000954095.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000954095.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000960725.1</td>
+      <td>Candidatus_Magnetoovum_chiemensis_CS-04</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000960725.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000960725.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000963235.1</td>
+      <td>Candidatus_Magnetobacterium_bavaricum_TM-1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000963235.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000963235.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_000968135.1</td>
+      <td>Magnetospira_sp._QH-2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Magnetospiraceae;g__Magnetospira;s__Magnetospira sp000968135</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_000968135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_000968135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001292585.1</td>
+      <td>Candidatus_Magnetomorum_sp._HK-1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Magnetomoraceae;g__Magnetomorum;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001292585.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001292585.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001303405.1</td>
+      <td>Nitrospira_bacterium_SG8_35_4</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__UBA6902;f__UBA6902;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001303405.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001303405.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001303605.1</td>
+      <td>Planctomycetes_bacterium_SM23_25</td>
+      <td>d__Bacteria;p__Planctomycetota;c__Phycisphaerae;o__FEN-1346;f__FEN-1346;g__JAUVZF01;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001303605.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001303605.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001511835.1</td>
+      <td>Magnetospirillum_sp._XM-1_XM1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum sp001511835</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001511835.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001511835.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001541255.1</td>
+      <td>Candidatus_Magnetominusculus_xianensis_HCH-1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus xianensis</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001541255.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001541255.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001650635.1</td>
+      <td>Magnetospirillum_moscoviense_BB-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Magnetospirillum;s__Magnetospirillum moscoviense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001650635.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001650635.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001650715.1</td>
+      <td>Paramagnetospirillum_marisnigri_SP-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum marisnigri</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001650715.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001650715.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001746755.1</td>
+      <td>Magnetovibrio_blakemorei_MV-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Magnetovibrionaceae;g__Magnetovibrio;s__Magnetovibrio blakemorei</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001746755.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001746755.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001804395.1</td>
+      <td>Omnitrophica_WOR_2_bacterium_GWA2_45_18</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__UBA10174;s__UBA10174 sp003528115</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001804395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001804395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_001805405.1</td>
+      <td>Omnitrophica_WOR_2_bacterium_GWC2_45_7</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__UBA10174;s__UBA10174 sp003528115</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_001805405.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_001805405.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002105535.1</td>
+      <td>Magnetospirillum_sp._ME-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum sp002105535</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002105535.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002105535.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002109495.1</td>
+      <td>Magnetofaba_australis_IT-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetococcaceae;g__Magnetofaba;s__Magnetofaba australis</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002109495.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002109495.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002401485.1</td>
+      <td>Elusimicrobiota_bacterium_NORP122</td>
+      <td>d__Bacteria;p__Elusimicrobiota;c__Elusimicrobia;o__UBA1565;f__UBA1565;g__UBA1565;s__UBA1565 sp002401485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002401485.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002401485.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002686765.1</td>
+      <td>Magnetovibrio_sp._ARS8</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__JADFTO01;g__GCA-2686765;s__GCA-2686765 sp013349695</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002686765.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002686765.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753095.1</td>
+      <td>Magnetococcales_bacterium_YD0425bin7</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__Magnetaquicoccus;s__Magnetaquicoccus sp002753095</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753095.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753095.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753105.1</td>
+      <td>Deltaproteobacteria_bacterium_YD0425bin50</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__YD0425bin50;g__YD0425bin50;s__YD0425bin50 sp002753105</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753105.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753105.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753135.1</td>
+      <td>Magnetococcales_bacterium_WMHbinv6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__Magnetaquicoccus;s__Magnetaquicoccus sp002753135</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753155.1</td>
+      <td>Alphaproteobacteria_bacterium_WMHbin7</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__WMHbin7;g__WMHbin7;s__WMHbin7 sp002753155</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753155.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753155.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753185.1</td>
+      <td>Magnetococcales_bacterium_WMHbin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__WMHbin3;s__WMHbin3 sp002753185</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753185.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753185.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753215.1</td>
+      <td>Magnetococcales_bacterium_WMHbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753215.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753215.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753225.1</td>
+      <td>Deltaproteobacteria_bacterium_YD0425bin51</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__YD0425bin51;g__YD0425bin51;s__YD0425bin51 sp002753225</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753225.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753225.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753255.1</td>
+      <td>Candidatus_Lambdaproteobacteria_bacterium_PCRbin3</td>
+      <td>d__Bacteria;p__SAR324;c__SAR324;o__SAR324;f__GCA-2753255;g__GCA-2753255;s__GCA-2753255 sp002753255</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753255.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753255.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753275.1</td>
+      <td>Zetaproteobacteria_bacterium_PCbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Zetaproteobacteria;o__Mariprofundales;f__Mariprofundaceae;g__GCA-2753275;s__GCA-2753275 sp002753275</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753275.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753275.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753305.1</td>
+      <td>Nitrospirae_bacterium_MYbin6</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp002753305</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753305.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753305.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753335.1</td>
+      <td>Nitrospirae_bacterium_MYbin3</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Dissulfurispiraceae;g__MYbin3;s__MYbin3 sp002753335</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753335.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753335.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753395.1</td>
+      <td>Nitrospirae_bacterium_MYbinv3</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp002753395</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753435.1</td>
+      <td>Nitrospirota_bacterium_HCHbin1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus xianensis</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753435.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753435.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753455.1</td>
+      <td>Nitrospirota_bacterium_MYbin2</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium casense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753455.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753455.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753465.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_MBPbin6</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__Fredricksoniimonas;s__Fredricksoniimonas sp002753465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753465.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753465.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753495.1</td>
+      <td>Magnetococcales_bacterium_HA3dbin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp002753495</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753495.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753495.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753505.1</td>
+      <td>Magnetococcales_bacterium_HCHbin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__HCHbin5 sp002753505</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753505.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753505.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753515.1</td>
+      <td>Magnetococcales_bacterium_HA3dbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753515</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753515.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753515.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753565.1</td>
+      <td>Magnetococcales_bacterium_ER1bin7</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp002753565</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753565.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753565.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753595.1</td>
+      <td>Magnetococcales_bacterium_HAa3bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015228975</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753595.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753595.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753615.1</td>
+      <td>Magnetococcales_bacterium_DCbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753615</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753615.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753615.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753665.1</td>
+      <td>Magnetococcales_bacterium_DC0425bin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__DC0425bin3;s__DC0425bin3 sp002753665</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753665.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753665.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753685.1</td>
+      <td>Nitrospirota_bacterium_DC0425bin1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp002753685</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753685.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753685.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753725.1</td>
+      <td>Deltaproteobacteria_bacterium_ER2bin7</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Magnetomoraceae;g__Magnetomorum;s__Magnetomorum sp002753725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753725.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753725.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753735.1</td>
+      <td>Magnetococcales_bacterium_DCbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753735.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753735.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_002753745.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_Cal1bin1</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__GCA-2753745;s__GCA-2753745 sp002753745</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_002753745.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_002753745.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_003284725.1</td>
+      <td>Paramagnetospirillum_kuznetsovii_LBB-42</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum kuznetsovii</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_003284725.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_003284725.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_004217665.1</td>
+      <td>Candidatus_Magnetaquicoccus_inordinatus_UR-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__Magnetaquicoccus;s__Magnetaquicoccus inordinatus</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_004217665.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_004217665.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_004376055.2</td>
+      <td>Nitrospirales_bacterium_LBB_01</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXG01;s__JADFXG01 sp004376055</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_004376055.2" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_004376055.2" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_004564135.1</td>
+      <td>Terasakiella_sp._SH-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Terasakiellaceae;g__Terasakiella;s__Terasakiella sp004564135</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_004564135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_004564135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_008375315.1</td>
+      <td>Ectothiorhodospiraceae_bacterium_BW-2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__BW-2;f__BW-2;g__BW-2;s__BW-2 sp008375315</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_008375315.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_008375315.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_009497875.2</td>
+      <td>gamma_proteobacterium_SS-5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__Chromatiales;f__Sedimenticolaceae;g__JADGBD01;s__JADGBD01 sp009497875</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_009497875.2" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_009497875.2" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_011089865.1</td>
+      <td>Magnetococcales_bacterium_DH2_bin20</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADFXB01;g__JADFXB01;s__JADFXB01 sp015233935</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_011089865.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_011089865.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_011089965.1</td>
+      <td>Magnetococcales_bacterium_DH2_bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp011089965</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_011089965.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_011089965.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013019105.1</td>
+      <td>Fundidesulfovibrio_magnetotacticus_FSS-1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__Fundidesulfovibrio;s__Fundidesulfovibrio magnetotacticus</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013019105.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013019105.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349285.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_22204_dsfv_001</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobulbia;o__Desulfobulbales;f__Desulfurivibrionaceae;g__DUZU01;s__DUZU01 sp013349285</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349285.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349285.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349295.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_22309_dsfv_022</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobulbia;o__Desulfobulbales;f__Desulfurivibrionaceae;g__Thiovibrio;s__Thiovibrio sp013349295</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349295.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349295.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349325.1</td>
+      <td>Desulfuromonadales_bacterium_MAG_13126_9_058</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp013349325</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349325.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349325.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349335.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_22225_2-02_112</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__JADFTO01;g__GCA-2686765;s__GCA-2686765 sp013349695</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349335.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349335.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349385.1</td>
+      <td>Magnetococcales_bacterium_MAG_21055_mgc_1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp013349385</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349385.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349385.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349395.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_17996_sntb_20</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophobacteria;o__Syntrophobacterales;f__Syntrophobacteraceae;g__SbD1;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349405.1</td>
+      <td>Desulfuromonadales_bacterium_MAG_21600_9_004</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp013349405</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349405.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349405.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349415.1</td>
+      <td>Desulfuromonadales_bacterium_MAG_21601_9_030</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349415.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349415.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349435.1</td>
+      <td>Planctomycetota_bacterium_MAG_18080_pl_157</td>
+      <td>d__Bacteria;p__Planctomycetota;c__Phycisphaerae;o__Sedimentisphaerales;f__Anaerohalosphaeraceae;g__QNBT01;s__QNBT01 sp013349435</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349435.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349435.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349485.1</td>
+      <td>Candidatus_Hydrogenedentota_bacterium_MAG_17963_hgd_111</td>
+      <td>d__Bacteria;p__Hydrogenedentota;c__Hydrogenedentia;o__Hydrogenedentiales;f__SLHB01;g__DUZN01;s__DUZN01 sp013349485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349485.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349485.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349495.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_15370_dsfb_81</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__SURF-15;g__DUZK01;s__DUZK01 sp013349495</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349495.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349495.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349515.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_17929_sntb_26</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophobacteria;o__Syntrophobacterales;f__Syntrophobacteraceae;g__SbD1;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349515.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349515.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349525.1</td>
+      <td>Planctomycetota_bacterium_MAG_17991_pl_60</td>
+      <td>d__Bacteria;p__Planctomycetota;c__Phycisphaerae;o__Sedimentisphaerales;f__Anaerohalosphaeraceae;g__QNBT01;s__QNBT01 sp013349435</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349525.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349525.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349535.1</td>
+      <td>Candidatus_Hydrogenedentota_bacterium_MAG_17971_hgd_130</td>
+      <td>d__Bacteria;p__Hydrogenedentota;c__Hydrogenedentia;o__Hydrogenedentiales;f__SLHB01;g__DUZN01;s__DUZN01 sp013349485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349535.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349535.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349585.1</td>
+      <td>Nitrospinota_bacterium_MAG_09705_ntspn_70</td>
+      <td>d__Bacteria;p__Nitrospinota;c__Nitrospinia;o__Nitrospinales;f__VA-1;g__UBA8687;s__UBA8687 sp013349585</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349585.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349585.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349595.1</td>
+      <td>Nitrospirota_bacterium_MAG_10313_ntr_31</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__DUZI01;g__DUZI01;s__DUZI01 sp013349595</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349595.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349595.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349615.1</td>
+      <td>Planctomycetota_bacterium_MAG_11118_pl_115</td>
+      <td>d__Bacteria;p__Planctomycetota;c__Phycisphaerae;o__Sedimentisphaerales;f__SG8-4;g__CS2-K091;s__CS2-K091 sp013349615</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349615.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349615.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349635.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_09788_naph_37</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__DSM-4660;o__Desulfatiglandales;f__Desulfatiglandaceae;g__Desulfacyla;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349635.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349635.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349665.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_06104_tlms_034</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Telmatospirillum;s__Telmatospirillum sp013349665</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349665.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349665.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349685.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_05596_2-02_51</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__JADFTO01;g__GCA-2686765;s__GCA-2686765 sp013349695</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349685.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349685.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349695.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_05422_2-02_14</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__JADFTO01;g__GCA-2686765;s__GCA-2686765 sp013349695</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349695.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349695.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349725.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_00792_naph_016</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__DSM-4660;o__Desulfatiglandales;f__Desulfatiglandaceae;g__DUZB01;s__DUZB01 sp013349725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349725.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349725.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349735.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_04806_tlms_2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Telmatospirillum;s__Telmatospirillum sp013349735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349735.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349735.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349745.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_00241_naph_010</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__DSM-4660;o__Desulfatiglandales;f__Desulfatiglandaceae;g__DUZB01;s__DUZB01 sp013349725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349745.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349745.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349775.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00215_gam_020</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GCF-002020875;f__GCF-002020875;g__Thiopontia;s__Thiopontia sp013349825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349775.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349775.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349805.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00212_gam_1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GCF-002020875;f__GCF-002020875;g__Thiopontia;s__Thiopontia sp013349825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349805.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349805.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349825.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00172_gam_018</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GCF-002020875;f__GCF-002020875;g__Thiopontia;s__Thiopontia sp013349825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349825.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349825.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349835.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00188_gam_006</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GCF-002020875;f__GCF-002020875;g__Thiopontia;s__Thiopontia sp013349825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349835.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349835.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349845.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00160_gam_009</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GCF-002020875;f__GCF-002020875;g__Thiopontia;s__Thiopontia sp013349825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349845.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349845.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349855.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00150_gam_010</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GCF-002020875;f__GCF-002020875;g__Thiopontia;s__Thiopontia sp013349825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349855.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349855.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_013349875.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_00134_naph_006</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__DSM-4660;o__Desulfatiglandales;f__Desulfatiglandaceae;g__DUZB01;s__DUZB01 sp013349725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_013349875.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_013349875.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228675.1</td>
+      <td>Desulfobacterales_bacterium_nYD0425bin6</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__YD0425bin50;g__YD0425bin50;s__YD0425bin50 sp002753105</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228675.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228675.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228685.1</td>
+      <td>Desulfobacterales_bacterium_nYD0425bin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__YD0425bin51;g__YD0425bin51;s__YD0425bin51 sp002753225</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228685.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228685.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228695.1</td>
+      <td>Alphaproteobacteria_bacterium_nYQH56bin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Rhodospirillaceae;g__JADGDA01;s__JADGDA01 sp015228695</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228695.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228695.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228775.1</td>
+      <td>Magnetococcales_bacterium_nYD0423bin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__Magnetaquicoccus;s__Magnetaquicoccus sp002753095</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228775.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228775.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228785.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nXXbin4</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JAAYZZ01;s__JAAYZZ01 sp015228785</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228785.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228785.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228815.1</td>
+      <td>Magnetococcales_bacterium_nYD0423bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015228815</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228815.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228815.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228825.1</td>
+      <td>Magnetococcales_bacterium_nYD0425bin13</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__Magnetaquicoccus;s__Magnetaquicoccus sp002753095</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228825.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228825.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228835.1</td>
+      <td>Desulfamplus_sp._nXXbin12</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228835.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228835.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228875.1</td>
+      <td>Deltaproteobacteria_bacterium_nXXbin1</td>
+      <td>d__Bacteria;p__UBA10199;c__UBA10199;o__UBA10199;f__JADGCS01;g__JADGCS01;s__JADGCS01 sp015228875</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228875.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228875.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228895.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin7</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__WMHbin3;s__WMHbin3 sp015228895</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228895.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228895.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228915.1</td>
+      <td>Alphaproteobacteria_bacterium_nWRX3bin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Rhodospirillaceae;g__JADGDA01;s__JADGDA01 sp015228695</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228915.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228915.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228925.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015228925</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228925.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228925.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228935.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp015228935</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228935.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228935.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228975.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin12</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015228975</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228975.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228975.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015228995.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin11</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGCH01;g__JADGCH01;s__JADGCH01 sp015228995</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015228995.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015228995.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229005.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin10</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGCL01;g__JADGCL01;s__JADGCL01 sp015229005</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229005.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229005.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229035.1</td>
+      <td>Magnetococcales_bacterium_nWRX2bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229035.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229035.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229045.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp015229045</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229045.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229045.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229055.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229055.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229055.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229095.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__HCHbin5 sp015229095</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229095.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229095.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229105.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin12</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGCL01;g__JADGCL01;s__JADGCL01 sp015229005</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229105.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229105.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229115.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGCH01;g__JADGCH01;s__JADGCH01 sp015229115</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229115.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229115.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229135.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin11</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015231775</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229165.1</td>
+      <td>Nitrospinota_bacterium_nWMHbin6</td>
+      <td>d__Bacteria;p__Nitrospinota;c__UBA7883;o__UBA7883;f__JADGGD01;g__JADGCD01;s__JADGCD01 sp015229165</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229165.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229165.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015229215.1</td>
+      <td>Alphaproteobacteria_bacterium_nWMHbin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__WMHbin7;g__WMHbin7;s__WMHbin7 sp002753155</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015229215.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015229215.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231175.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp015231175</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231175.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231175.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231205.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231205.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231205.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231215.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__Magnetaquicoccus;s__Magnetaquicoccus sp002753135</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231215.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231215.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231235.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__WMHbin3;s__WMHbin3 sp002753185</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231235.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231235.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231265.1</td>
+      <td>Magnetococcales_bacterium_nwalbin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGBX01;g__JADGBX01;s__JADGBX01 sp015231265</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231265.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231265.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231295.1</td>
+      <td>Magnetococcales_bacterium_nW5bin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015231295</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231295.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231295.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231305.1</td>
+      <td>Magnetococcales_bacterium_nwagbin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp015231305</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231305.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231305.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231325.1</td>
+      <td>Oligoflexia_bacterium_nW3bin19</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bacteriovoracia;o__Bacteriovoracales;f__Bacteriovoracaceae;g__JADGAN01;s__JADGAN01 sp015231325</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231325.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231325.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231345.1</td>
+      <td>Planctomycetota_bacterium_nwagbin3</td>
+      <td>d__Bacteria;p__Planctomycetota;c__JADGBV01;o__JADGBV01;f__JADGBV01;g__JADGBV01;s__JADGBV01 sp015231345</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231345.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231345.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231375.1</td>
+      <td>Magnetococcales_bacterium_nW5bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015231375</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231375.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231375.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231395.1</td>
+      <td>Desulfamplus_sp._nTSbin21</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015231395</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231405.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nW3bin14</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Tantalellales;f__Tantalellaceae;g__JADGBR01;s__JADGBR01 sp015231405</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231405.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231405.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231415.1</td>
+      <td>Desulfamplus_sp._nTSbin4</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231415.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231415.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231435.1</td>
+      <td>Gammaproteobacteria_bacterium_nTSbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__BW-2;f__BW-2;g__JADFYS01;s__JADFYS01 sp015231435</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231435.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231435.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231465.1</td>
+      <td>Desulfamplus_sp._nTSbin20</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015231465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231465.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231465.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231495.1</td>
+      <td>Planctomycetota_bacterium_nTSbin13</td>
+      <td>d__Bacteria;p__Planctomycetota;c__JADGBV01;o__JADGBV01;f__JADGBV01;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231495.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231495.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231505.1</td>
+      <td>Alphaproteobacteria_bacterium_nTSbin12</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Magnetovibrionaceae;g__JADGBG01;s__JADGBG01 sp015231605</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231505.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231505.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231515.1</td>
+      <td>Desulfobulbaceae_bacterium_nTSbin18</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobulbia;o__Desulfobulbales;f__Desulfurivibrionaceae;g__JADGBM01;s__JADGBM01 sp015231515</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231515.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231515.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231525.1</td>
+      <td>Desulfamplus_sp._nTSbin15</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015231705</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231525.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231525.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231535.1</td>
+      <td>SAR324_cluster_bacterium_nTSbin10</td>
+      <td>d__Bacteria;p__SAR324;c__SAR324;o__SAR324;f__JADFZZ01;g__JADFZZ01;s__JADFZZ01 sp015232315</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231535.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231535.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231595.1</td>
+      <td>Desulfobacterales_bacterium_nTSbin1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__JADGBH01;g__JADGBH01;s__JADGBH01 sp015231595</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231595.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231595.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231605.1</td>
+      <td>Alphaproteobacteria_bacterium_nSSYDbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Magnetovibrionaceae;g__JADGBG01;s__JADGBG01 sp015231605</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231605.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231605.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231615.1</td>
+      <td>Desulfamplus_sp._nS315bin44</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015231615</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231615.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231615.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231655.1</td>
+      <td>Desulfamplus_sp._nS315bin9</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231655.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231655.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231665.1</td>
+      <td>Gammaproteobacteria_bacterium_nS315bin38</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__Chromatiales;f__Sedimenticolaceae;g__JADGBD01;s__JADGBD01 sp015231665</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231665.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231665.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231685.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nS315bin20</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__2-02-FULL-51-18;f__JAGOUK01;g__JADGBA01;s__JADGBA01 sp015231685</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231685.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231685.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231705.1</td>
+      <td>Desulfamplus_sp._nS315bin3</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015231705</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231705.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231705.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231715.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nS315bin24</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Tantalellales;f__Tantalellaceae;g__JADGBB01;s__JADGBB01 sp015231715</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231715.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231715.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231755.1</td>
+      <td>Magnetococcales_bacterium_nQXH2bin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015231755</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231755.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231755.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231775.1</td>
+      <td>Magnetococcales_bacterium_nQXH2bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015231775</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231775.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231775.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231795.1</td>
+      <td>Alphaproteobacteria_bacterium_nQXH1bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__WMHbin7;g__WMHbin7;s__WMHbin7 sp015231795</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231795.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231795.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231815.1</td>
+      <td>Nitrospinota_bacterium_nPCRbin9</td>
+      <td>d__Bacteria;p__Nitrospinota;c__JADGAW01;o__JADGAW01;f__JADGAW01;g__JADGAW01;s__JADGAW01 sp015231815</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231815.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231815.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231825.1</td>
+      <td>SAR324_cluster_bacterium_nPCRbin7</td>
+      <td>d__Bacteria;p__SAR324;c__SAR324;o__SAR324;f__GCA-2753255;g__JADGAV01;s__JADGAV01 sp015231825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231825.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231825.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231855.1</td>
+      <td>Zetaproteobacteria_bacterium_nPCbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Zetaproteobacteria;o__Mariprofundales;f__Mariprofundaceae;g__GCA-2753275;s__GCA-2753275 sp002753275</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231855.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231855.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231865.1</td>
+      <td>Gammaproteobacteria_bacterium_nPCRbin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__GRL18;f__GRL18;g__JADGAU01;s__JADGAU01 sp015231865</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231865.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231865.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231885.1</td>
+      <td>SAR324_cluster_bacterium_nPCRbin10</td>
+      <td>d__Bacteria;p__SAR324;c__SAR324;o__SAR324;f__GCA-2753255;g__GCA-2753255;s__GCA-2753255 sp002753255</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231885.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231885.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231915.1</td>
+      <td>Magnetococcales_bacterium_nNGHbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__WMHbin3;s__WMHbin3 sp015231915</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231915.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231915.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231925.1</td>
+      <td>Magnetococcales_bacterium_nNGHbin14</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGAQ01;g__JADGAQ01;s__JADGAQ01 sp015231925</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231925.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231925.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231955.1</td>
+      <td>Oligoflexia_bacterium_nN3bin31</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bacteriovoracia;o__Bacteriovoracales;f__Bacteriovoracaceae;g__JADGAN01;s__JADGAN01 sp015231955</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231955.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231955.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231965.1</td>
+      <td>Magnetococcales_bacterium_nNGHbin13</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADGAP01;g__JADGAP01;s__JADGAP01 sp015231965</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231965.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231965.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015231995.1</td>
+      <td>Nitrospinota_bacterium_nNGHbin12</td>
+      <td>d__Bacteria;p__Nitrospinota;c__UBA7883;o__UBA7883;f__JACRLM01;g__JADGAO01;s__JADGAO01 sp015231995</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015231995.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015231995.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232015.1</td>
+      <td>Oligoflexia_bacterium_nN3bin16</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bacteriovoracia;o__Bacteriovoracales;f__Bacteriovoracaceae;g__JADFZW01;s__JADFZW01 sp015232015</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232015.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232015.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232025.1</td>
+      <td>Alphaproteobacteria_bacterium_nN3bin14</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__JADFZP01;s__JADFZP01 sp015232025</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232025.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232025.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232035.1</td>
+      <td>Desulfamplus_sp._nN2-2bin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232555</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232035.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232035.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232055.1</td>
+      <td>Alphaproteobacteria_bacterium_nN2-2bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__JADFZP01;s__JADFZP01 sp015232485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232055.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232055.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232095.1</td>
+      <td>Alphaproteobacteria_bacterium_nN2-2bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Magnetospirillum;s__Magnetospirillum moscoviense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232095.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232095.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232115.1</td>
+      <td>Nitrospirota_bacterium_nMYbin6</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp002753305</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232115.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232115.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232135.1</td>
+      <td>Magnetococcales_bacterium_nMYbin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp015231175</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232145.1</td>
+      <td>Nitrospirota_bacterium_nMYbin4</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp002753395</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232145.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232145.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232165.1</td>
+      <td>Nitrospirota_bacterium_nMYbin3</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp015232165</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232165.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232165.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232185.1</td>
+      <td>Nitrospirota_bacterium_nMYbin2</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium casense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232185.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232185.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232195.1</td>
+      <td>Nitrospirota_bacterium_nMYbin1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Dissulfurispiraceae;g__MYbin3;s__MYbin3 sp002753335</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232195.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232195.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232235.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nMBPbin3</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__Fredricksoniimonas;s__Fredricksoniimonas sp002753465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232235.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232235.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232245.1</td>
+      <td>Magnetococcales_bacterium_nMBPbin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015232245</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232245.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232245.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232255.1</td>
+      <td>Oligoflexia_bacterium_nKLKbin5</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bacteriovoracia;o__Bacteriovoracales;f__Bacteriovoracaceae;g__JADGAN01;s__JADGAN01 sp015231955</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232255.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232255.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232265.1</td>
+      <td>Magnetococcales_bacterium_nKLKbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232265.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232265.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232315.1</td>
+      <td>SAR324_cluster_bacterium_nKLKbin6</td>
+      <td>d__Bacteria;p__SAR324;c__SAR324;o__SAR324;f__JADFZZ01;g__JADFZZ01;s__JADFZZ01 sp015232315</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232315.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232315.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232335.1</td>
+      <td>Alphaproteobacteria_bacterium_nKLKbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__WMHbin7;g__WMHbin7;s__WMHbin7 sp015232335</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232335.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232335.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232355.1</td>
+      <td>Oligoflexia_bacterium_nKLKbin12</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bacteriovoracia;o__Bacteriovoracales;f__Bacteriovoracaceae;g__JADFZW01;s__JADFZW01 sp015232355</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232355.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232355.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232365.1</td>
+      <td>Magnetococcales_bacterium_nJSWbin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp015232365</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232365.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232365.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232395.1</td>
+      <td>Magnetococcales_bacterium_nJSWbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADFZT01;g__JADFZT01;s__JADFZT01 sp015232395</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232405.1</td>
+      <td>Magnetococcales_bacterium_nJSWbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp015232405</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232405.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232405.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232435.1</td>
+      <td>Alphaproteobacteria_bacterium_nJC2bin54</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__JADFZP01;s__JADFZP01 sp015232485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232435.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232435.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232455.1</td>
+      <td>Desulfamplus_sp._nJC1bin9</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232455</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232455.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232455.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232465.1</td>
+      <td>Desulfamplus_sp._nHLHbin7</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232465.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232465.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232485.1</td>
+      <td>Alphaproteobacteria_bacterium_nJC1bin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__JADFZP01;s__JADFZP01 sp015232485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232485.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232485.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232515.1</td>
+      <td>Desulfobacterales_bacterium_nHLHbin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__YD0425bin51;g__YD0425bin51;s__YD0425bin51 sp002753225</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232515.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232515.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232535.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nHLHbin2</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__JADFZM01;s__JADFZM01 sp015232535</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232535.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232535.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232555.1</td>
+      <td>Desulfamplus_sp._nHGRbin17</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232555</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232555.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232555.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232565.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nHGRbin18</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__GCA-2753745;s__GCA-2753745 sp015232565</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232565.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232565.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232575.1</td>
+      <td>Candidatus_Riflebacteria_bacterium_nHGRbin4</td>
+      <td>d__Bacteria;p__Riflebacteria;c__Ozemobacteria;o__Ozemobacterales;f__Ozemobacteraceae;g__JADFXM01;s__JADFXM01 sp015232575</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232575.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232575.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232615.1</td>
+      <td>Nitrospirota_bacterium_nHCHbin2</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus xianensis</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232615.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232615.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232635.1</td>
+      <td>Magnetococcales_bacterium_nHCHbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__HCHbin5 sp002753505</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232635.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232635.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232645.1</td>
+      <td>Magnetococcales_bacterium_nHA5abin3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015232645</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232645.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232645.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232675.1</td>
+      <td>Magnetococcales_bacterium_nHAa3bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753515</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232675.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232675.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232685.1</td>
+      <td>Magnetococcales_bacterium_nHA5abin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015228975</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232685.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232685.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232705.1</td>
+      <td>Magnetococcales_bacterium_nHA4bin8</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015232705</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232705.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232705.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232735.1</td>
+      <td>Oligoflexales_bacterium_nHA4bin4</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Oligoflexia;o__Oligoflexales;f__Oligoflexaceae;g__JADFZC01;s__JADFZC01 sp015232735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232735.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232735.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232755.1</td>
+      <td>Magnetococcales_bacterium_nHA3dbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp002753495</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232755.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232755.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232765.1</td>
+      <td>Magnetococcales_bacterium_nHA4bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015232825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232765.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232765.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232795.1</td>
+      <td>Magnetococcales_bacterium_nGRbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp015232795</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232795.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232795.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232815.1</td>
+      <td>Magnetococcales_bacterium_nHA3dbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753515</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232815.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232815.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232825.1</td>
+      <td>Magnetococcales_bacterium_nHA1bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015232825</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232825.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232825.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232855.1</td>
+      <td>Fibrobacteria_bacterium_nGRbin1</td>
+      <td>d__Bacteria;p__Fibrobacterota;c__Fibrobacteria;o__UBA11236;f__JADFYW01;g__JADFYW01;s__JADFYW01 sp015232855</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232855.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232855.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232865.1</td>
+      <td>Magnetococcales_bacterium_nER1bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp015232865</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232865.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232865.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232875.1</td>
+      <td>Candidatus_Magnetomorum_sp._nER2bin1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Magnetomoraceae;g__Magnetomorum;s__Magnetomorum sp002753725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232875.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232875.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232915.1</td>
+      <td>Magnetococcales_bacterium_nER1bin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__GCA-2753565;s__GCA-2753565 sp002753565</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232915.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232915.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232935.1</td>
+      <td>Desulfamplus_sp._nER1bin2</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015232935</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232935.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232935.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232945.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin7</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXP01;s__JADFXP01 sp015233465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232945.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232945.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232955.1</td>
+      <td>Gammaproteobacteria_bacterium_nER1bin10</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__BW-2;f__BW-2;g__JADFYS01;s__JADFYS01 sp015232955</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232955.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232955.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015232995.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin8</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXG01;s__JADFXG01 sp015233895</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015232995.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015232995.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233015.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin6</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp015233015</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233015.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233015.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233035.1</td>
+      <td>Magnetococcales_bacterium_nDJH8bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__HCHbin5 sp015233035</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233035.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233035.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233045.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin13</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp015233045</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233045.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233045.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233055.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH8bin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__JADFXK01;o__JADFXK01;f__JADFXK01;g__JADFXK01;s__JADFXK01 sp015233055</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233055.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233055.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233065.1</td>
+      <td>Desulfovibrionaceae_bacterium_nDJH8bin10</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__JADFXV01;s__JADFXV01 sp015233395</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233065.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233065.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233115.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin5</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__JADFYE01;s__JADFYE01 sp015233115</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233115.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233115.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233135.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH6bin20</td>
+      <td>d__Bacteria;p__UBA10199;c__UBA10199;o__DSSB01;f__JADFYH01;g__JADFYH01;s__JADFYH01 sp015233135</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233145.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin28</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JADFYI01;s__JADFYI01 sp015233145</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233145.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233145.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233155.1</td>
+      <td>Candidatus_Riflebacteria_bacterium_nDJH6bin19</td>
+      <td>d__Bacteria;p__Riflebacteria;c__Ozemobacteria;o__Ozemobacterales;f__Ozemobacteraceae;g__JADFYG01;s__JADFYG01 sp015233155</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233155.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233155.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233165.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin18</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JACQCF01;s__JACQCF01 sp015233165</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233165.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233165.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233195.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin14</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__JADFYE01;s__JADFYE01 sp015233195</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233195.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233195.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233235.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin13</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Tantalellales;f__Tantalellaceae;g__JADFYD01;s__JADFYD01 sp015233235</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233235.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233235.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233245.1</td>
+      <td>Nitrospirota_bacterium_nDJH6bin1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXG01;s__JADFXG01 sp015233245</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233245.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233245.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233265.1</td>
+      <td>Nitrospirota_bacterium_nDJH5bin4</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp015233265</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233265.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233265.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233285.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH5bin8</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__JADFXK01;o__JADFXK01;f__JADFXK01;g__JADFXK01;s__JADFXK01 sp015233285</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233285.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233285.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233295.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH6bin12</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__JADFXK01;o__JADFXK01;f__JADFXK01;g__JADFXK01;s__JADFXK01 sp015233295</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233295.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233295.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233335.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH2bin18</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JABDGZ01;s__JABDGZ01 sp015233335</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233335.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233335.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233355.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH2bin9</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__JADFXK01;o__JADFXK01;f__JADFXK01;g__JADFXK01;s__JADFXK01 sp015233285</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233355.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233355.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233365.1</td>
+      <td>Nitrospirota_bacterium_nDJH15bin8</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Dissulfurispiraceae;g__JADFXI01;s__JADFXI01 sp015233365</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233365.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233365.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233375.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH2bin13</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JABDGZ01;s__JABDGZ01 sp015233375</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233375.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233375.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233395.1</td>
+      <td>Desulfovibrionaceae_bacterium_nDJH2bin10</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__JADFXV01;s__JADFXV01 sp015233395</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233405.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH15bin6</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__JADFXT01;s__JADFXT01 sp015233405</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233405.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233405.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233455.1</td>
+      <td>Nitrospirota_bacterium_nDJH15bin2</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp015233725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233455.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233455.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233465.1</td>
+      <td>Candidatus_Magnetobacteriaceae_bacterium_nDJH14bin9</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXP01;s__JADFXP01 sp015233465</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233465.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233465.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233485.1</td>
+      <td>Nitrospirota_bacterium_nDJH14bin7</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp015233485</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233485.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233485.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233495.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH15bin13</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Zapsychraceae;g__JADFXQ01;s__JADFXQ01 sp015233495</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233495.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233495.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233515.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH15bin4</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfarculia;o__Adiutricales;f__JAGVGV01;g__JADFXS01;s__JADFXS01 sp015233515</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233515.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233515.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233555.1</td>
+      <td>Nitrospirota_bacterium_nDJH14bin5</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXG01;s__JADFXG01 sp015233895</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233555.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233555.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233565.1</td>
+      <td>Candidatus_Riflebacteria_bacterium_nDJH14bin3</td>
+      <td>d__Bacteria;p__Riflebacteria;c__Ozemobacteria;o__Ozemobacterales;f__Ozemobacteraceae;g__JADFXM01;s__JADFXM01 sp015233565</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233565.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233565.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233585.1</td>
+      <td>Alphaproteobacteria_bacterium_nDJH14bin10</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Rhodospirillaceae;g__JADFXL01;s__JADFXL01 sp015233585</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233585.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233585.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233615.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin3</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXJ01;s__JADFXJ01 sp015233615</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233615.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233615.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233625.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH13bin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__JADFXK01;o__JADFXK01;f__JADFXK01;g__JADFXK01;s__JADFXK01 sp015233625</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233625.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233625.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233655.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin21</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Dissulfurispiraceae;g__JADFXI01;s__JADFXI01 sp015233655</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233655.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233655.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233675.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH13bin20</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JABDGZ01;s__JABDGZ01 sp015233675</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233675.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233675.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233685.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin15</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp015233685</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233685.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233685.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233705.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH13bin13</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JAAYZZ01;s__JAAYZZ01 sp015233705</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233705.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233705.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233725.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp015233725</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233725.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233725.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233755.1</td>
+      <td>Desulfamplus_sp._nDH2bin3</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus sp015233755</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233755.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233755.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233765.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nCal1bin2</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__GCA-2753745;s__GCA-2753745 sp002753745</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233765.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233765.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233785.1</td>
+      <td>Magnetococcales_bacterium_nCLbin10</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADFWT01;g__JADFWT01;s__JADFWT01 sp015233785</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233785.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233785.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233895.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin19</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXG01;s__JADFXG01 sp015233895</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233895.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233895.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233905.1</td>
+      <td>Magnetococcales_bacterium_nDH2bin7</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp011089965</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233905.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233905.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233935.1</td>
+      <td>Magnetococcales_bacterium_nDH2bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADFXB01;g__JADFXB01;s__JADFXB01 sp015233935</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233935.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233935.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233945.1</td>
+      <td>Magnetococcales_bacterium_nDC0425bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__HCHbin5 sp002753505</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233945.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233945.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233965.1</td>
+      <td>Magnetococcales_bacterium_nDC0425bin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__DC0425bin3;s__DC0425bin3 sp002753665</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233965.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233965.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015233985.1</td>
+      <td>Nitrospirota_bacterium_nDC0425bin1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp002753685</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015233985.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015233985.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015234015.1</td>
+      <td>Magnetococcales_bacterium_nDCbin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753735</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015234015.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015234015.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015234035.1</td>
+      <td>Magnetococcales_bacterium_nDCbin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp002753615</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015234035.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015234035.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015234045.1</td>
+      <td>Magnetococcales_bacterium_nCLbin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADFWU01;g__JADFWU01;s__JADFWU01 sp015234045</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015234045.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015234045.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015234065.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nCal2bin1</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__JADFWS01;s__JADFWS01 sp015234065</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015234065.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015234065.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015234085.1</td>
+      <td>Nitrospinota_bacterium_nARSLQbin3</td>
+      <td>d__Bacteria;p__Nitrospinota;c__UBA7883;o__UBA7883;f__JACRLM01;g__JADGAO01;s__JADGAO01 sp015231995</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015234085.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015234085.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_015234115.1</td>
+      <td>Magnetococcales_bacterium_nARSLQbin1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__JAANAU01 sp015234115</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_015234115.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_015234115.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_018606785.1</td>
+      <td>Candidatus_Magnetobacterium_cryptolimnobacter_XYR</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp002753685</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_018606785.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_018606785.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_018606805.1</td>
+      <td>Candidatus_Magnetomicrobium_cryptolimnococcus_XYC</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__XYC;s__XYC sp018606805</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_018606805.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_018606805.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_020523885.1</td>
+      <td>Candidatus_Liberimonas_magnetica_DUR002</td>
+      <td>d__Bacteria;p__Elusimicrobiota;c__Endomicrobiia;o__Endomicrobiales;f__JAFGIL01;g__Liberimonas;s__Liberimonas magnetica</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_020523885.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_020523885.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_020523905.1</td>
+      <td>Candidatus_Obscuribacterium_magneticum_DUR003</td>
+      <td>d__Bacteria;p__Elusimicrobiota;c__Elusimicrobia;o__F11;f__F11;g__Obscuribacterium;s__Obscuribacterium magneticum</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_020523905.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_020523905.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_022321325.1</td>
+      <td>Candidatus_Magnetominusculus_sp._LBB02</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__Magnetominusculus sp022321325</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022321325.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_022321325.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_022321425.1</td>
+      <td>Syntrophales_bacterium_LBB04</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophia;o__Syntrophales;f__JACQWR01;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022321425.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_022321425.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_024275975.1</td>
+      <td>Nitrospirota_bacterium_Dive96_bin3.242</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__UBA6898;g__JAJRYC01;s__JAJRYC01 sp024275975</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_024275975.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_024275975.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_029001845.1</td>
+      <td>Candidatus_Magnetocorallium_paracelense_XS-1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetocorallium;s__Magnetocorallium paracelense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_029001845.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_029001845.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_040325905.1</td>
+      <td>Candidatus_Magnetobacterium_sp._LHC-1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetobacterium;s__Magnetobacterium sp002753685</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_040325905.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_040325905.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_900093605.1</td>
+      <td>Candidatus_Terasakiella_magnetica_PR-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Terasakiellaceae;g__Terasakiella;s__Terasakiella magnetica</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_900093605.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_900093605.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_900170035.1</td>
+      <td>Desulfamplus_magnetovallimortis_BW-1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfobacteraceae;g__Desulfamplus;s__Desulfamplus magnetovallimortis</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_900170035.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_900170035.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_900659855.1</td>
+      <td>Candidatus_Desulfarcum_epimagneticum_CR-1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__CR-1;g__CR-1;s__CR-1 sp900659855</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_900659855.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_900659855.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_902725215.1</td>
+      <td>Rhodospirillaceae_bacterium_LM-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__WMHbin7;g__WMHbin7;s__WMHbin7 sp902725215</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_902725215.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_902725215.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_902729415.1</td>
+      <td>Candidatus_Terasakiella_magnetica_PR1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum magnetica_A</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_902729415.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_902729415.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_902729425.1</td>
+      <td>Magnetospirillum_sp._SS-4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum sp902729425</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_902729425.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_902729425.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_902729435.1</td>
+      <td>Magnetospirillum_sp._UT-4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Magnetospirillum;s__Magnetospirillum sp902729435</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_902729435.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_902729435.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_902729445.1</td>
+      <td>Magnetospirillum_sp._LM-5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Magnetospirillum;s__Magnetospirillum sp902729445</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_902729445.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_902729445.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_937425535.1</td>
+      <td>Rhodovastum_atsumiense_G2-11</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Acetobacterales;f__Acetobacteraceae;g__Rhodovastum;s__Rhodovastum atsumiense</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_937425535.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_937425535.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>IMG_2264265205</td>
+      <td>Planctomycetes_bacterium_SCGC_JGI090-P21</td>
+      <td>d__Bacteria;p__Planctomycetota;c__Phycisphaerae;o__UBA1845;f__PWPN01;g__;s__</td>
+      <td><a href="https://genome.jgi.doe.gov/portal/?core=genome&query=2264265205&searchIn=Anything" target="_blank">JGI</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>IMG_2651870060</td>
+      <td>Unclassified_Nitrospina_Bin_25</td>
+      <td>d__Bacteria;p__Nitrospinota;c__Nitrospinia;o__Nitrospinales;f__JAJDAT01;g__JAJDAT01;s__</td>
+      <td><a href="https://genome.jgi.doe.gov/portal/?core=genome&query=2651870060&searchIn=Anything" target="_blank">JGI</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>IMG_3300015153</td>
+      <td>Omnitrophica_bacterium_SCGC_AG-290-C17</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Omnitrophia;o__Omnitrophales;f__Aquincolibacteriaceae;g__;s__</td>
+      <td><a href="https://genome.jgi.doe.gov/portal/?core=genome&query=3300015153&searchIn=Anything" target="_blank">JGI</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>IMG_3300022116</td>
+      <td>Uncultured_microorganism_SbSrfc_SA12_01_D19</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobulbia;o__Desulfobulbales;f__BM004;g__;s__</td>
+      <td><a href="https://genome.jgi.doe.gov/portal/?core=genome&query=3300022116&searchIn=Anything" target="_blank">JGI</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036956.1</td>
+      <td>uncultured_Bdellovibrionaceae_bacterium_SFLP_MTB_Ki1-2-2m_bin5</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bdellovibrionia;o__Bdellovibrionales;f__Bdellovibrionaceae;g__CAIYID01;s__CAIYID01 sp903926205</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036956.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036957.1</td>
+      <td>uncultured_Bdellovibrionaceae_bacterium_SFLP_MTB_Ki1-2-7m_bin20</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Bdellovibrionia;o__Bdellovibrionales;f__Bdellovibrionaceae;g__CAIYID01;s__CAIYID01 sp903926205</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036957.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036958.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_Ki3-D4_bin3</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__UBA1018;o__UBA1018;f__UBA1018;g__CAIRTR01;s__CAIRTR01 sp903881565</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036958.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036959.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-3-65m_bin36</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__UBA1018;o__UBA1018;f__UBA1018;g__CAITVN01;s__CAITVN01 sp903895855</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036959.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036960.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-5-9m_bin60</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__UBA1018;o__UBA1018;f__UBA1018;g__CAITVN01;s__CAITVN01 sp903895855</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036960.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036961.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-7-9m_bin42</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__UBA1018;o__UBA1018;f__UBA1018;g__CAITVN01;s__CAITVN01 sp903895855</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036961.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036962.1</td>
+      <td>uncultured_Oligoflexia_bacterium_SFLP_MTB_LJ-13-9m_bin1</td>
+      <td>d__Bacteria;p__Bdellovibrionota;c__Oligoflexia;o__Oligoflexales;f__RGVZ01;g__CAILAO01;s__CAILAO01 sp903832105</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036962.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036963.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Day2-5_bin11</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036963.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036964.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Day2-6_bin13</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036964.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036965.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Ja1-D5_bin27</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036965.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036966.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Ki1-2-7m_bin29</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036966.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036967.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Umea1p4_bin7</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903839535</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036967.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036968.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc080925-7m_bin41</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903953895</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036968.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036969.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090519-7m_bin30</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903953895</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036969.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036970.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090519-8m_bin12</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903953895</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036970.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036971.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090721-6m_bin27</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903953895</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036971.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036972.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090721-7m_bin30</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903953895</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036972.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036973.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090907-6m_bin20</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfobacteria;o__Desulfobacterales;f__Desulfatirhabdiaceae;g__RAAP-1;s__RAAP-1 sp903953895</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036973.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036974.1</td>
+      <td>uncultured_Geobacterales_bacterium_SFLP_MTB_A4_bin1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__CAIOGM01;g__CAIOGM01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036974.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036975.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ja1-D5_bin9</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036975.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036976.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ki2-D4_bin37</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036976.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036977.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-15m_bin6</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036977.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036978.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-4m_bin11</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036978.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036979.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ja1-D4_bin17</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903845365</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036979.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036980.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-4m_bin33</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903845365</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036980.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036981.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_AM-lipid-02-D5_bin1</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903925005</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036981.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036982.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_AM4_bin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903925005</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036982.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036983.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_A3_bin18</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903939115</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036983.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036984.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_A4_bin21</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903939115</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036984.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036985.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_D3_bin2</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903939115</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036985.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036986.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_D4_bin5</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903939115</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036986.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036987.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_E5_bin6</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfuromonadia;o__Geobacterales;f__Pseudopelobacteraceae;g__JACRCG01;s__JACRCG01 sp903939115</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036987.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036988.1</td>
+      <td>uncultured_Smithellaceae_bacterium_SFLP_MTB_Loc090519-8-7m_bin35</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophia;o__Syntrophales;f__Smithellaceae;g__UBA8904;s__UBA8904 sp903904655</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036988.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036989.1</td>
+      <td>uncultured_Syntrophales_bacterium_SFLP_MTB_Day2-5_bin12</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophia;o__Syntrophales;f__UBA5619;g__UBA5619;s__UBA5619 sp903903205</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036989.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036990.1</td>
+      <td>uncultured_Syntrophales_bacterium_SFLP_MTB_Day2-6_bin17</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophia;o__Syntrophales;f__UBA5619;g__UBA5619;s__UBA5619 sp903903205</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036990.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036991.1</td>
+      <td>uncultured_Syntrophales_bacterium_SFLP_MTB_Ja1-D5_bin7</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Syntrophia;o__Syntrophales;f__UBA5619;g__UBA5619;s__UBA5619 sp903903205</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036991.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036992.1</td>
+      <td>uncultured_Syntrophorhabdaceae_bacterium_SFLP_MTB_Ja1-D5_bin2</td>
+      <td>d__Bacteria;p__Desulfobacterota_G;c__Syntrophorhabdia;o__Syntrophorhabdales;f__Syntrophorhabdaceae;g__Delta-02;s__Delta-02 sp903872255</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036992.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036993.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-01-D7_bin11</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__CAILNX01;s__CAILNX01 sp903835685</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036993.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036994.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-01-D8_bin17</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__CAILNX01;s__CAILNX01 sp903835685</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036994.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036995.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-02-D6_bin11</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__CAILNX01;s__CAILNX01 sp903835685</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036995.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036996.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-02-D7_bin42</td>
+      <td>d__Bacteria;p__Desulfobacterota;c__Desulfovibrionia;o__Desulfovibrionales;f__Desulfovibrionaceae;g__CAILNX01;s__CAILNX01 sp903835685</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036996.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036997.1</td>
+      <td>uncultured_Hydrogenedentiales_bacterium_SFLP_MTB_Ki3-D4_bin17</td>
+      <td>d__Bacteria;p__Hydrogenedentota;c__Hydrogenedentia;o__Hydrogenedentiales;f__CAIZGN01;g__CAIZGN01;s__CAIZGN01 sp903932505</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036997.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036998.1</td>
+      <td>uncultured_Polyangiaceae_bacterium_SFLP_MTB_KT4_bin17</td>
+      <td>d__Bacteria;p__Myxococcota;c__Polyangia;o__Polyangiales;f__Polyangiaceae;g__JAJZQG01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036998.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036999.1</td>
+      <td>uncultured_Omnitrophota_bacterium_SFLP_MTB_Ki1-2-7m_bin21</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__Fredricksoniimonas;s__Fredricksoniimonas aquilentivivens</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000036999.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037000.1</td>
+      <td>uncultured_Omnitrophota_bacterium_SFLP_MTB_Ki2-D4_bin23</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Koll11;o__Zapsychrales;f__Fredricksoniimonadaceae;g__Fredricksoniimonas;s__Fredricksoniimonas sp903861305</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037000.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037001.1</td>
+      <td>uncultured_Omnitrophales_bacterium_SFLP_MTB_AM5_bin22</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Omnitrophia;o__Omnitrophales;f__Aquincolibacteriaceae;g__JAKLFP01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037001.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037002.1</td>
+      <td>uncultured_Omnitrophales_bacterium_SFLP_MTB_AM-2014-D8_bin43</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Omnitrophia;o__Omnitrophales;f__Aquincolibacteriaceae;g__Aquincolibacterium;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037002.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037003.1</td>
+      <td>uncultured_Omnitrophales_bacterium_SFLP_MTB_MJ4_bin9</td>
+      <td>d__Bacteria;p__Omnitrophota;c__Omnitrophia;o__Omnitrophales;f__Aquincolibacteriaceae;g__Aquincolibacterium;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037003.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037004.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_AM-2014-D3_bin8</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Azospirillales;f__Azospirillaceae;g__BOG-933;s__BOG-933 sp903927615</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037004.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037005.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_AM-2014-D4_bin6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Azospirillales;f__Azospirillaceae;g__CAIZDL01;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037005.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037006.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_VK3_bin11</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Azospirillales;f__Azospirillaceae;g__CAIZDL01;s__CAIZDL01 sp903856295</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037006.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037007.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_Umea3p3_bin40</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Azospirillales;f__Azospirillaceae;g__CAIZDL01;s__CAIZDL01 sp903931735</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037007.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037008.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_Umea3p4_bin32</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Azospirillales;f__Azospirillaceae;g__CAIZDL01;s__CAIZDL01 sp903931735</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037008.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037009.1</td>
+      <td>uncultured_Magnetospirillum_SFLP_MTB_Loc080925-5-5m_bin37</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Magnetospirillum;s__Magnetospirillum sp903941095</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037009.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037010.1</td>
+      <td>uncultured_Phaeospirillum_SFLP_MTB_AM-lipid-02-D5_bin40</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum sp903853455</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037010.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037011.1</td>
+      <td>uncultured_Phaeospirillum_SFLP_MTB_VK2_bin2</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum sp903853455</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037011.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037012.1</td>
+      <td>uncultured_Phaeospirillum_SFLP_MTB_E3_bin4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Phaeospirillum;s__Phaeospirillum sp903901915</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037012.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037013.1</td>
+      <td>uncultured_Telmatospirillum_SFLP_MTB_VK2_bin28</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Telmatospirillum;s__</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037013.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037014.1</td>
+      <td>uncultured_Telmatospirillum_SFLP_MTB_AM-2014-D4_bin5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Telmatospirillum;s__Telmatospirillum sp903858635</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037014.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037015.1</td>
+      <td>uncultured_Telmatospirillum_SFLP_MTB_AM-lipid-02-D5_bin20</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Magnetospirillaceae;g__Telmatospirillum;s__Telmatospirillum sp903858635</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037015.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037016.1</td>
+      <td>uncultured_gamma_proteobacterium_SFLP_MTB_KR4_bin15</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__CAIRSR01;f__CAIRSR01;g__CAIRSR01;s__CAIRSR01 sp903824965</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037016.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037017.1</td>
+      <td>uncultured_gamma_proteobacterium_SFLP_MTB_KR4_bin9</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__CAIRSR01;f__CAIRSR01;g__CAIRSR01;s__CAIRSR01 sp903881315</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037017.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037018.1</td>
+      <td>uncultured_Magnetaquicoccaceae_bacterium_SFLP_MTB_Umea3p4_bin52</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__HCHbin5 sp903913345</td>
+      <td><a href="https://www.biosino.org/elmsg/search?keyword=LMSG_G000037018.1" target="_blank">eLMSG</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>LO017727</td>
+      <td>Candidatus_Magnetococcus_massalia_strain_MO-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetococcaceae;g__Magnetococcus;s__</td>
+      <td><a href="https://www.ebi.ac.uk/ena/browser/view/LO017727" target="_blank">ENA</a></td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>RAST_1898112</td>
+      <td>Rhodospirillaceae_bacterium_MAG_01419_mvb_30</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__Magnetovibrionaceae;g__Magnetovibrio;s__</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>GCA_022760095.1</td>
+      <td>Candidatus_Magnetoovum_sp._WYHC-5</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__XYC;s__XYC sp018606805</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022760095.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_022760095.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_036937345.1</td>
+      <td>Chromatiales_bacterium_YYHR-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__BW-2;f__BW-2;g__BW-2;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_036937345.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_036937345.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908085.1</td>
+      <td>Magnetococcus_sp._YQC-5</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908085.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908085.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908095.1</td>
+      <td>Nitrospirae_bacterium_YQR-1</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__JADFXG01;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908095.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908095.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908105.1</td>
+      <td>Magnetococcus_sp._YQC-9</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__JAANAU01;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908105.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908105.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908125.1</td>
+      <td>Magnetococcus_sp._XQGC-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908125.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908125.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908135.1</td>
+      <td>Magnetococcus_sp._YQC-3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908135.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908135.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908285.1</td>
+      <td>Alphaproteobacteria_bacterium_YQV-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales;f__Rhodospirillaceae;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908285.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908285.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908345.1</td>
+      <td>Magnetospirillum_sp._WYHS-4</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Alphaproteobacteria;o__Rhodospirillales_A;f__GLO-3;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908345.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908345.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908355.1</td>
+      <td>Gammaproteobacteria_bacterium_SHHR-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Gammaproteobacteria;o__Chromatiales;f__Sedimenticolaceae;g__JADGBD01;s__JADGBD01 sp009497875</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908355.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908355.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908385.1</td>
+      <td>Magnetococcus_sp._THC-1_WYH</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__UBA8363;g__UBA8363;s__UBA8363 sp015228925</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908385.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908385.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908395.1</td>
+      <td>Magnetococcus_sp._WYHC-3</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908395.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908395.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908505.1</td>
+      <td>Nitrospirota_bacterium_MYC-10</td>
+      <td>d__Bacteria;p__Nitrospirota;c__Thermodesulfovibrionia;o__Thermodesulfovibrionales;f__Magnetobacteriaceae;g__Magnetominusculus;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908505.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908505.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908525.1</td>
+      <td>Magnetococcus_sp._MYC-9</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908525.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908525.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908535.1</td>
+      <td>Magnetococcus_sp._DMHC-6</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__JADFZT01;g__;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908535.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908535.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908555.1</td>
+      <td>Magnetococcus_sp._DMHC-8</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__Magnetaquicoccaceae;g__HCHbin5;s__</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908555.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908555.1" target="_blank">GTDB</a></td>
+    </tr>
+    <tr>
+      <td>GCA_039908575.1</td>
+      <td>Magnetococcus_sp._DMHC-1</td>
+      <td>d__Bacteria;p__Pseudomonadota;c__Magnetococcia;o__Magnetococcales;f__DC0425bin3;g__HA3dbin3;s__HA3dbin3 sp015228935</td>
+      <td><a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_039908575.1" target="_blank">NCBI</a></td>
+      <td><a href="https://gtdb.ecogenomic.org/genome?gid=GCA_039908575.1" target="_blank">GTDB</a></td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+    </div>
+</div>
+<script>
+    function getParam(param){
+        return new URLSearchParams(window.location.search).get(param);
+    }
+
+    let table = new DataTable('#myTable', {scrollX: 1000,});
+//     let search_lable = document.querySelector('#myTable_filter').querySelector('label')
+//     let labletext = search_lable.innerHTML.replace('Search:', 'Filter:')
+//     search_lable.innerHTML=labletext
+    let kw = getParam("search")
+    if (kw) {
+        table.search(kw)
+        table.draw()
+    }
+    
+</script>
+
+    </main>
+
+    <script src="/MTBdatabase/static/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,3104 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MTB genomic database">
+    <meta name="author" content="jirunjia@gmail.com">
+    <title>Genomic database of MTB</title>
+
+    <link rel="stylesheet" type="text/css" href="/MTBdatabase/static/dist/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/MTBdatabase/static/brand/11.png">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    
+
+    <style>
+        .carousel-control-next,
+        .carousel-control-prev,
+        .carousel-indicators {
+          filter: invert(100%);
+        }
+        /* .carousel img {
+            width: auto;
+            height: 100%;
+        } */
+        .carousel-caption {
+            color: black;
+        }
+        .error {
+            color: red;
+        }
+        
+        #myTable_filter {
+            margin-bottom: 1rem;
+        }
+        #myTable_paginate {
+            margin-top: 0.5rem;
+            font-size:small;
+        }
+        #myTable_info {
+            margin-top: 0.5rem;
+            font-size:small;
+        }
+        #cardHeader {
+            font-size:large;
+            font-weight: bold;
+        }
+
+        #zoom {
+            width: 100%;
+            height: 100%;
+            transform-origin: 0px 0px;
+            transform: scale(1) translate(0px, 0px);
+            /* cursor: grab; */
+        }
+        div#zoom > svg {
+            width: 100%;
+            height: auto;
+        }
+        table {
+            table-layout: fixed;
+            white-space: nowrap;
+        }
+        
+    </style>
+  
+    
+        <title>GdbMTB - Browser</title>
+    
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+
+  </head>
+
+  <body>
+    <header class="d-flex flex-wrap px-3 border-bottom navbar-fixed-top bg-dark">
+        <div class="container">
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <div class="container-fluid">
+                <a class="navbar-brand" href="/MTBdatabase/">GdbMTB</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                          <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Browser
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/QualityandFeature/">Quality and feature</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/classification/">Classification</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/reference/">Reference</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/EnvironmentalMetadata/">Environmental metadata</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/MagnetosomeGeneClusters/">Magnetosome gene clusters</a></li>
+                            </ul>
+                          </li>
+                        </ul>
+                    </div>
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Tree
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="/MTBdatabase/tree-tree/">Tree</a></li>                                    
+                                    <li><a class="dropdown-item" href="/MTBdatabase/tree-taxa/">Taxa</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/statistics/">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/downloads/">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/about/">About</a>
+                    </li>
+                    </ul>
+                    
+                </div>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+
+    <main style="padding-top: 70px;">
+        
+<div class="container mt-4">
+    <div class="card text-dark bg-light shadow-lg bg-body rounded">
+        <div class="card-header" id="cardHeader">
+            Environmental metadata
+        </div>
+        <div class="card-body">
+            <table class="table table-sm table-striped table-hover table table-fluid" id="myTable">
+  <thead class="table-dark align-middle">
+    <tr style="text-align: right;">
+      <th>Accession</th>
+      <th>Organism Name</th>
+      <th>Geographic location</th>
+      <th>Geographic coordinates</th>
+      <th>Environment</th>
+      <th>Environment (note)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GCA_000009985.1</td>
+      <td>Paramagnetospirillum_magneticum_AMB-1</td>
+      <td>Japan: Koganei, Tokyo</td>
+      <td>35.69322019924865 N 139.51000916768828 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000010665.1</td>
+      <td>Solidesulfovibrio_magneticus_RS-1</td>
+      <td>Japan: Kameno river</td>
+      <td>34.174844027425266 N 135.23713936732472 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000014865.1</td>
+      <td>Magnetococcus_marinus_MC-1</td>
+      <td>USA: Pettaquamscutt Estuary, Rhode Island</td>
+      <td>41.44221139400216 N 71.44088823326253 W</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_000342045.1</td>
+      <td>Paramagnetospirillum_caucaseum_SO-1</td>
+      <td>Russia:Krasnodar krai</td>
+      <td>43.8940 N 42.7209 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000478645.1</td>
+      <td>Latescibacteria_bacterium_SCGC_AAA252-B13</td>
+      <td>USA: Sakinaw Lake</td>
+      <td>49.67280586494438 N 124.02881336742824 W</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_000513295.1</td>
+      <td>Magnetospirillum_gryphiswaldense_MSR-1_v2</td>
+      <td>Germany: Ryck River</td>
+      <td>54.10188087632118 N 13.389197505968982 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000516475.1</td>
+      <td>Candidatus_Magnetoglobus_multicellularis_str._Araruama</td>
+      <td>Brazil: Araruama Lagoon</td>
+      <td>22.8333 S 42.2166 W</td>
+      <td>hypersaline</td>
+      <td>hypersaline</td>
+    </tr>
+    <tr>
+      <td>GCA_000714715.1</td>
+      <td>Candidatus_Magnetobacterium_casense_MYR-1</td>
+      <td>China: Lake Miyun, Beijing</td>
+      <td>40.49863762226092 N 116.99163193698311 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000829825.1</td>
+      <td>Paramagnetospirillum_magnetotacticum_MS-1</td>
+      <td>USA: Cedar Swamp, Massachusetts</td>
+      <td>42.59672121109787 N 70.76937573804732 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000954095.1</td>
+      <td>Candidatus_Omnitrophus_magneticus_SKK-01</td>
+      <td>Germany: Lake Chiemsee, Bavaria</td>
+      <td>47.869440 N 12.398015 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000960725.1</td>
+      <td>Candidatus_Magnetoovum_chiemensis_CS-04</td>
+      <td>Germany: Lake Chiemsee, Bavaria</td>
+      <td>47.869440 N 12.398015 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000963235.1</td>
+      <td>Candidatus_Magnetobacterium_bavaricum_TM-1</td>
+      <td>Germany: Lake Chiemsee, Bavaria</td>
+      <td>47.869440 N 12.398015 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_000968135.1</td>
+      <td>Magnetospira_sp._QH-2</td>
+      <td>Huiquan Bay, Qingdao, China</td>
+      <td>36.05239497110082 N 120.3371792345723 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_001292585.1</td>
+      <td>Candidatus_Magnetomorum_sp._HK-1</td>
+      <td>Germany:Wadden Sea, near Cuxhaven</td>
+      <td>53.890580 N 8.678464 E</td>
+      <td>marine</td>
+      <td>coastal tidal sand flats</td>
+    </tr>
+    <tr>
+      <td>GCA_001303405.1</td>
+      <td>Nitrospira_bacterium_SG8_35_4</td>
+      <td>USA: White Oak River Estuary, North Carolina</td>
+      <td>34.7414 N 77.1234 W</td>
+      <td>brackish</td>
+      <td>sulfate-rich zone estuary, White Oak River Estuary, North Carolina</td>
+    </tr>
+    <tr>
+      <td>GCA_001303605.1</td>
+      <td>Planctomycetes_bacterium_SM23_25</td>
+      <td>USA: White Oak River Estuary, North Carolina</td>
+      <td>34.7414 N 77.1234 W</td>
+      <td>brackish</td>
+      <td>Sulfate-methane transisition zone estuary, White Oak River Estuary, North Carolina</td>
+    </tr>
+    <tr>
+      <td>GCA_001511835.1</td>
+      <td>Magnetospirillum_sp._XM-1_XM1</td>
+      <td>China: Xi'an City moat</td>
+      <td>34.2527 N 108.9203 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_001541255.1</td>
+      <td>Candidatus_Magnetominusculus_xianensis_HCH-1</td>
+      <td>China: city moat, Xi'an</td>
+      <td>34.25287 N 108.92187 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_001650635.1</td>
+      <td>Magnetospirillum_moscoviense_BB-1</td>
+      <td>Russia: Moskva River</td>
+      <td>55.792661 N 37.409944 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_001650715.1</td>
+      <td>Paramagnetospirillum_marisnigri_SP-1</td>
+      <td>Russia: Pshada River</td>
+      <td>44.389272 N 38.336217 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_001746755.1</td>
+      <td>Magnetovibrio_blakemorei_MV-1</td>
+      <td>USA: salt marsh pool, Neponset River estuary, Boston, MA</td>
+      <td>41.27 N 71.04000000 W</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_001804395.1</td>
+      <td>Omnitrophica_WOR_2_bacterium_GWA2_45_18</td>
+      <td>USA: Rifle, CO</td>
+      <td>39.5369 N 107.7828 W</td>
+      <td>subsurface/deep subsurface</td>
+      <td>Rifle well CD01 at time point 1 / A; 5m depth; 0.2 filter; adjecent to Colorado river, Rifle, CO, USA</td>
+    </tr>
+    <tr>
+      <td>GCA_001805405.1</td>
+      <td>Omnitrophica_WOR_2_bacterium_GWC2_45_7</td>
+      <td>USA: Rifle, CO</td>
+      <td>39.5369 N 107.7828 W</td>
+      <td>subsurface/deep subsurface</td>
+      <td>Rifle well CD01 at time point 3 / C; 5m depth; 0.2 filter; adjecent to Colorado river, Rifle, CO, USA</td>
+    </tr>
+    <tr>
+      <td>GCA_002105535.1</td>
+      <td>Magnetospirillum_sp._ME-1</td>
+      <td>China: East Lake sediment, Wuhan city</td>
+      <td>30.55 N 114.36 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002109495.1</td>
+      <td>Magnetofaba_australis_IT-1</td>
+      <td>Brazil: Itaipu Lagoon, Niteroi, Rio de Janeiro State</td>
+      <td>22.9644167 S 43.0459472 W</td>
+      <td>brackish</td>
+      <td>brackish to marine coastal lagoon</td>
+    </tr>
+    <tr>
+      <td>GCA_002401485.1</td>
+      <td>Elusimicrobiota_bacterium_NORP122</td>
+      <td>Atlantic Ocean: North Pond</td>
+      <td>24.5464232590787 N 46.49654978817962 W</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_002686765.1</td>
+      <td>Magnetovibrio_sp._ARS8</td>
+      <td>Indian Ocean:Northwest Arabian Sea Upwelling Province</td>
+      <td>12.233732409004206 N 64.40798572321344 E</td>
+      <td>marine</td>
+      <td>marine pelagic biome</td>
+    </tr>
+    <tr>
+      <td>GCA_002753095.1</td>
+      <td>Magnetococcales_bacterium_YD0425bin7</td>
+      <td>China: Yuandadu Park</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753105.1</td>
+      <td>Deltaproteobacteria_bacterium_YD0425bin50</td>
+      <td>China: Yuandadu Park</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753135.1</td>
+      <td>Magnetococcales_bacterium_WMHbinv6</td>
+      <td>China: Lake Weiming</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753155.1</td>
+      <td>Alphaproteobacteria_bacterium_WMHbin7</td>
+      <td>China: Lake Weiming</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753185.1</td>
+      <td>Magnetococcales_bacterium_WMHbin3</td>
+      <td>China: Lake Weiming</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753215.1</td>
+      <td>Magnetococcales_bacterium_WMHbin1</td>
+      <td>China: Lake Weiming</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753225.1</td>
+      <td>Deltaproteobacteria_bacterium_YD0425bin51</td>
+      <td>China: Yuandadu Park</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753255.1</td>
+      <td>Candidatus_Lambdaproteobacteria_bacterium_PCRbin3</td>
+      <td>Australia: Punkally Creek</td>
+      <td>36.23413 S 150.06798 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_002753275.1</td>
+      <td>Zetaproteobacteria_bacterium_PCbin4</td>
+      <td>Australia: Painkalac Creek</td>
+      <td>38.46575 S 144.09288 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_002753305.1</td>
+      <td>Nitrospirae_bacterium_MYbin6</td>
+      <td>China: Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753335.1</td>
+      <td>Nitrospirae_bacterium_MYbin3</td>
+      <td>China: Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753395.1</td>
+      <td>Nitrospirae_bacterium_MYbinv3</td>
+      <td>China: Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753435.1</td>
+      <td>Nitrospirota_bacterium_HCHbin1</td>
+      <td>China: Xi'an city moat</td>
+      <td>34.25287 N 108.92187 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753455.1</td>
+      <td>Nitrospirota_bacterium_MYbin2</td>
+      <td>China: Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753465.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_MBPbin6</td>
+      <td>Australia: Mount Beauty Pondage</td>
+      <td>36.73874 S 147.16443 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753495.1</td>
+      <td>Magnetococcales_bacterium_HA3dbin3</td>
+      <td>China: Pond, Hongan</td>
+      <td>31.173819 N 114.547642 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753505.1</td>
+      <td>Magnetococcales_bacterium_HCHbin5</td>
+      <td>China: Xi'an city moat</td>
+      <td>34.25287 N 108.92187 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753515.1</td>
+      <td>Magnetococcales_bacterium_HA3dbin1</td>
+      <td>China: Pond, Hongan</td>
+      <td>31.173819 N 114.547642 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753565.1</td>
+      <td>Magnetococcales_bacterium_ER1bin7</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5338 S 143.97832 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_002753595.1</td>
+      <td>Magnetococcales_bacterium_HAa3bin1</td>
+      <td>China: Rice field, Hongan</td>
+      <td>31.174289 N 114.543941 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753615.1</td>
+      <td>Magnetococcales_bacterium_DCbin2</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753665.1</td>
+      <td>Magnetococcales_bacterium_DC0425bin3</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753685.1</td>
+      <td>Nitrospirota_bacterium_DC0425bin1</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753725.1</td>
+      <td>Deltaproteobacteria_bacterium_ER2bin7</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5359 S 143.97478 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_002753735.1</td>
+      <td>Magnetococcales_bacterium_DCbin4</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_002753745.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_Cal1bin1</td>
+      <td>Australia: Lake Catani</td>
+      <td>36.73426 S 146.81119 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_003284725.1</td>
+      <td>Paramagnetospirillum_kuznetsovii_LBB-42</td>
+      <td>Russia: Moscow region</td>
+      <td>55.38 N 39.44 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_004217665.1</td>
+      <td>Candidatus_Magnetaquicoccus_inordinatus_UR-1</td>
+      <td>Russia: Uda River</td>
+      <td>51.8229 N 107.6199 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_004376055.2</td>
+      <td>Nitrospirales_bacterium_LBB_01</td>
+      <td>Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe</td>
+      <td>55.632230 N 39.743775 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_004564135.1</td>
+      <td>Terasakiella_sp._SH-1</td>
+      <td>China:Sanya</td>
+      <td>18.2913889 N 109.349722 E</td>
+      <td>marine</td>
+      <td>intertidal</td>
+    </tr>
+    <tr>
+      <td>GCA_008375315.1</td>
+      <td>Ectothiorhodospiraceae_bacterium_BW-2</td>
+      <td>USA: Badwater Basin at Death Valley National Park, California</td>
+      <td>36.051 N 116.631 W</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_009497875.2</td>
+      <td>gamma_proteobacterium_SS-5</td>
+      <td>USA: Salton Sea, California</td>
+      <td>33.32259960484889 N 115.84321548353557 W</td>
+      <td>hypersaline</td>
+      <td>Non-marine Saline and Alkaline environment</td>
+    </tr>
+    <tr>
+      <td>GCA_011089865.1</td>
+      <td>Magnetococcales_bacterium_DH2_bin20</td>
+      <td>China: Wuhan, East Lake</td>
+      <td>30.555833 N 114.411389 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_011089965.1</td>
+      <td>Magnetococcales_bacterium_DH2_bin6</td>
+      <td>China: Wuhan, East Lake</td>
+      <td>30.555833 N 114.411389 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_013019105.1</td>
+      <td>Fundidesulfovibrio_magnetotacticus_FSS-1</td>
+      <td>Japan:Saitama, Suwa Pond</td>
+      <td>35.892 N 139.368 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_013349285.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_22204_dsfv_001</td>
+      <td>USA: California</td>
+      <td>38.0300 N 122.1500 W</td>
+      <td>marine</td>
+      <td>Bay sediment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349295.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_22309_dsfv_022</td>
+      <td>USA: California</td>
+      <td>38.0500 N 121.9340 W</td>
+      <td>marine</td>
+      <td>Bay sediment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349325.1</td>
+      <td>Desulfuromonadales_bacterium_MAG_13126_9_058</td>
+      <td>Democratic Republic of the Congo: South-Kivu, Lake Kivu, Kabuno Bay</td>
+      <td>1.64 S 29.05 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_013349335.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_22225_2-02_112</td>
+      <td>Pacific Ocean: Eastern Tropical North Pacific</td>
+      <td>20.3333 N 107.0000 W</td>
+      <td>marine oxygen minimum zone (OMZ)</td>
+      <td>sea water (OMZ)</td>
+    </tr>
+    <tr>
+      <td>GCA_013349385.1</td>
+      <td>Magnetococcales_bacterium_MAG_21055_mgc_1</td>
+      <td>USA: Colorado</td>
+      <td>38.9600 N 106.9900 W</td>
+      <td>subsurface/deep subsurface</td>
+      <td>Deep subsurface, Sediment from fracked well</td>
+    </tr>
+    <tr>
+      <td>GCA_013349395.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_17996_sntb_20</td>
+      <td>USA: Minnesota</td>
+      <td>47.5028 N 93.4828 W</td>
+      <td>bog/peatland (freshwater)</td>
+      <td>Bog peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_013349405.1</td>
+      <td>Desulfuromonadales_bacterium_MAG_21600_9_004</td>
+      <td>Canada: Ontario</td>
+      <td>49.7530 N 93.7980 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_013349415.1</td>
+      <td>Desulfuromonadales_bacterium_MAG_21601_9_030</td>
+      <td>Canada: Ontario</td>
+      <td>49.6900 N 93.7180 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_013349435.1</td>
+      <td>Planctomycetota_bacterium_MAG_18080_pl_157</td>
+      <td>USA: California, Salton Sea</td>
+      <td>33.4166 N 115.9166 W</td>
+      <td>hypersaline</td>
+      <td>Non-marine Saline and Alkaline environment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349485.1</td>
+      <td>Candidatus_Hydrogenedentota_bacterium_MAG_17963_hgd_111</td>
+      <td>USA: California, Salton Sea</td>
+      <td>33.3000 N 115.8000 W</td>
+      <td>hypersaline</td>
+      <td>Non-marine Saline and Alkaline environment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349495.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_15370_dsfb_81</td>
+      <td>Sweden: Oskarshamn</td>
+      <td>57.4344 N 16.6600 E</td>
+      <td>subsurface/deep subsurface</td>
+      <td>deep subsurface, saline groundwater environment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349515.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_17929_sntb_26</td>
+      <td>USA: Minnesota</td>
+      <td>47.5028 N 93.4828 W</td>
+      <td>bog/peatland (freshwater)</td>
+      <td>Bog peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_013349525.1</td>
+      <td>Planctomycetota_bacterium_MAG_17991_pl_60</td>
+      <td>USA: California, Salton Sea</td>
+      <td>33.4166 N 115.9166 W</td>
+      <td>hypersaline</td>
+      <td>Non-marine Saline and Alkaline environment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349535.1</td>
+      <td>Candidatus_Hydrogenedentota_bacterium_MAG_17971_hgd_130</td>
+      <td>USA: California, Salton Sea</td>
+      <td>33.3000 N 115.8000 W</td>
+      <td>hypersaline</td>
+      <td>Non-marine Saline and Alkaline environment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349585.1</td>
+      <td>Nitrospinota_bacterium_MAG_09705_ntspn_70</td>
+      <td>Arctic Ocean: Canada Basin</td>
+      <td>77.0991 N 150.2252 W</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_013349595.1</td>
+      <td>Nitrospirota_bacterium_MAG_10313_ntr_31</td>
+      <td>South Africa: Limpopo</td>
+      <td>22.5304 S 30.6814 E</td>
+      <td>thermal environment (hot spring water)</td>
+      <td>hot spring water</td>
+    </tr>
+    <tr>
+      <td>GCA_013349615.1</td>
+      <td>Planctomycetota_bacterium_MAG_11118_pl_115</td>
+      <td>Denmark:Aarhus Bay</td>
+      <td>56.1030 N 10.4580 E</td>
+      <td>marine</td>
+      <td>marine sediment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349635.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_09788_naph_37</td>
+      <td>Indian Ocean:near North Sumatra</td>
+      <td>1.7590 N 96.7740 E</td>
+      <td>marine</td>
+      <td>marine sediment</td>
+    </tr>
+    <tr>
+      <td>GCA_013349665.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_06104_tlms_034</td>
+      <td>USA:Crystal Bog, Wisconsin, USA</td>
+      <td>46.0072 N 89.6063 W</td>
+      <td>bog/peatland (freshwater)</td>
+      <td>freshwater, bog</td>
+    </tr>
+    <tr>
+      <td>GCA_013349685.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_05596_2-02_51</td>
+      <td>Pacific Ocean: Eastern Tropical North Pacific</td>
+      <td>19 N 107.0000 W</td>
+      <td>marine oxygen minimum zone (OMZ)</td>
+      <td>sea water (OMZ)</td>
+    </tr>
+    <tr>
+      <td>GCA_013349695.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_05422_2-02_14</td>
+      <td>Pacific Ocean: Eastern Tropical North Pacific</td>
+      <td>20.3333 N 106.0000 W</td>
+      <td>marine oxygen minimum zone (OMZ)</td>
+      <td>sea water (OMZ)</td>
+    </tr>
+    <tr>
+      <td>GCA_013349725.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_00792_naph_016</td>
+      <td>Sweden:KBA site, Vaertahamnen, Baltic Sea</td>
+      <td>59.363333 N 18.119167 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_013349735.1</td>
+      <td>Rhodospirillaceae_bacterium_MAG_04806_tlms_2</td>
+      <td>USA:Crystal Bog, Wisconsin, USA</td>
+      <td>46.0072 N 89.6063 W</td>
+      <td>bog/peatland (freshwater)</td>
+      <td>freshwater, bog</td>
+    </tr>
+    <tr>
+      <td>GCA_013349745.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_00241_naph_010</td>
+      <td>Sweden:KBB site, Vaertahamnen, Baltic Sea</td>
+      <td>59.350163 N 18.107847 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_013349775.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00215_gam_020</td>
+      <td>Canada: Saanich Inlet 48, Vancouver Island, BC</td>
+      <td>48.6 N 123.5 W</td>
+      <td>marine</td>
+      <td>Intertidal zone</td>
+    </tr>
+    <tr>
+      <td>GCA_013349805.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00212_gam_1</td>
+      <td>Canada: Saanich Inlet 48, Vancouver Island, BC</td>
+      <td>48.6 N 123.5 W</td>
+      <td>marine</td>
+      <td>Intertidal zone</td>
+    </tr>
+    <tr>
+      <td>GCA_013349825.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00172_gam_018</td>
+      <td>Canada: Saanich Inlet 48, Vancouver Island, BC</td>
+      <td>48.6 N 123.5 W</td>
+      <td>marine</td>
+      <td>Intertidal zone</td>
+    </tr>
+    <tr>
+      <td>GCA_013349835.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00188_gam_006</td>
+      <td>Canada: Saanich Inlet 48, Vancouver Island, BC</td>
+      <td>48.6 N 123.5 W</td>
+      <td>marine</td>
+      <td>Intertidal zone</td>
+    </tr>
+    <tr>
+      <td>GCA_013349845.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00160_gam_009</td>
+      <td>Canada: Saanich Inlet 48, Vancouver Island, BC</td>
+      <td>48.6 N 123.5 W</td>
+      <td>marine</td>
+      <td>Intertidal zone</td>
+    </tr>
+    <tr>
+      <td>GCA_013349855.1</td>
+      <td>Gammaproteobacteria_bacterium_MAG_00150_gam_010</td>
+      <td>Canada: Saanich Inlet 48, Vancouver Island, BC</td>
+      <td>48.6 N 123.5 W</td>
+      <td>marine</td>
+      <td>Intertidal zone</td>
+    </tr>
+    <tr>
+      <td>GCA_013349875.1</td>
+      <td>Deltaproteobacteria_bacterium_MAG_00134_naph_006</td>
+      <td>Sweden:KBA site, Vaertahamnen, Baltic Sea</td>
+      <td>59.363333 N 18.119167 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_015228675.1</td>
+      <td>Desulfobacterales_bacterium_nYD0425bin6</td>
+      <td>China: Yuandadu Park, Beijing</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228685.1</td>
+      <td>Desulfobacterales_bacterium_nYD0425bin5</td>
+      <td>China: Yuandadu Park, Beijing</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228695.1</td>
+      <td>Alphaproteobacteria_bacterium_nYQH56bin3</td>
+      <td>China: Yanqi Lake, Beijing</td>
+      <td>40.39833 N 116.67777 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228775.1</td>
+      <td>Magnetococcales_bacterium_nYD0423bin3</td>
+      <td>China: Yuandadu Park, Beijing</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228785.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nXXbin4</td>
+      <td>China: Aiken creek, Qinghai</td>
+      <td>38.170074 N 90.57854 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228815.1</td>
+      <td>Magnetococcales_bacterium_nYD0423bin2</td>
+      <td>China: Yuandadu Park, Beijing</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228825.1</td>
+      <td>Magnetococcales_bacterium_nYD0425bin13</td>
+      <td>China: Yuandadu Park, Beijing</td>
+      <td>39.974732 N 116.368688 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228835.1</td>
+      <td>Desulfamplus_sp._nXXbin12</td>
+      <td>China: Aiken creek, Qinghai</td>
+      <td>38.170074 N 90.57854 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228875.1</td>
+      <td>Deltaproteobacteria_bacterium_nXXbin1</td>
+      <td>China: Aiken creek, Qinghai</td>
+      <td>38.170074 N 90.57854 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228895.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin7</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228915.1</td>
+      <td>Alphaproteobacteria_bacterium_nWRX3bin4</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228925.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin6</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228935.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin2</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228975.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin12</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015228995.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin11</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229005.1</td>
+      <td>Magnetococcales_bacterium_nWRX3bin10</td>
+      <td>China: Innermogolia</td>
+      <td>48.455 N 117.63305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229035.1</td>
+      <td>Magnetococcales_bacterium_nWRX2bin6</td>
+      <td>China: Innermogolia</td>
+      <td>48.23111 N 117.62277 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229045.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin6</td>
+      <td>China: Innermogolia</td>
+      <td>48.23222 N 117.62305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229055.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin5</td>
+      <td>China: Innermogolia</td>
+      <td>48.23222 N 117.62305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229095.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin1</td>
+      <td>China: Innermogolia</td>
+      <td>48.23222 N 117.62305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229105.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin12</td>
+      <td>China: Innermogolia</td>
+      <td>48.23222 N 117.62305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229115.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin3</td>
+      <td>China: Innermogolia</td>
+      <td>48.23222 N 117.62305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229135.1</td>
+      <td>Magnetococcales_bacterium_nWRX1bin11</td>
+      <td>China: Innermogolia</td>
+      <td>48.23222 N 117.62305 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229165.1</td>
+      <td>Nitrospinota_bacterium_nWMHbin6</td>
+      <td>China: Lake Weiming, Beijing</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015229215.1</td>
+      <td>Alphaproteobacteria_bacterium_nWMHbin5</td>
+      <td>China: Lake Weiming, Beijing</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231175.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin2</td>
+      <td>China: Lake Weiming, Beijing</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231205.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin4</td>
+      <td>China: Lake Weiming, Beijing</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231215.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin1</td>
+      <td>China: Lake Weiming, Beijing</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231235.1</td>
+      <td>Magnetococcales_bacterium_nWMHbin3</td>
+      <td>China: Lake Weiming, Beijing</td>
+      <td>39.993142 N 116.30256 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231265.1</td>
+      <td>Magnetococcales_bacterium_nwalbin5</td>
+      <td>Australia: Wallaga Lake</td>
+      <td>36.36013 S 150.07384 E</td>
+      <td>hypersaline</td>
+      <td>hypersaline</td>
+    </tr>
+    <tr>
+      <td>GCA_015231295.1</td>
+      <td>Magnetococcales_bacterium_nW5bin3</td>
+      <td>China: Innermogolia</td>
+      <td>41.564702 N 109.081861 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231305.1</td>
+      <td>Magnetococcales_bacterium_nwagbin5</td>
+      <td>Australia: Waganaga Inlet</td>
+      <td>36.21831 S 150.12168 E</td>
+      <td>hypersaline</td>
+      <td>hypersaline</td>
+    </tr>
+    <tr>
+      <td>GCA_015231325.1</td>
+      <td>Oligoflexia_bacterium_nW3bin19</td>
+      <td>China: Innermogolia</td>
+      <td>41.564702 N 109.081861 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231345.1</td>
+      <td>Planctomycetota_bacterium_nwagbin3</td>
+      <td>Australia: Waganaga Inlet</td>
+      <td>36.21831 S 150.12168 E</td>
+      <td>hypersaline</td>
+      <td>hypersaline</td>
+    </tr>
+    <tr>
+      <td>GCA_015231375.1</td>
+      <td>Magnetococcales_bacterium_nW5bin1</td>
+      <td>China: Innermogolia</td>
+      <td>41.564702 N 109.081861 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231395.1</td>
+      <td>Desulfamplus_sp._nTSbin21</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231405.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nW3bin14</td>
+      <td>China: Innermogolia</td>
+      <td>41.564702 N 109.081861 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231415.1</td>
+      <td>Desulfamplus_sp._nTSbin4</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231435.1</td>
+      <td>Gammaproteobacteria_bacterium_nTSbin2</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231465.1</td>
+      <td>Desulfamplus_sp._nTSbin20</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231495.1</td>
+      <td>Planctomycetota_bacterium_nTSbin13</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231505.1</td>
+      <td>Alphaproteobacteria_bacterium_nTSbin12</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231515.1</td>
+      <td>Desulfobulbaceae_bacterium_nTSbin18</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231525.1</td>
+      <td>Desulfamplus_sp._nTSbin15</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231535.1</td>
+      <td>SAR324_cluster_bacterium_nTSbin10</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231595.1</td>
+      <td>Desulfobacterales_bacterium_nTSbin1</td>
+      <td>China: Tuosu Lake, Qinghai</td>
+      <td>37.197953 N 96.868083 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231605.1</td>
+      <td>Alphaproteobacteria_bacterium_nSSYDbin4</td>
+      <td>China: Shuishangyadan, Qinghai</td>
+      <td>37.624414 N 93.733812 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231615.1</td>
+      <td>Desulfamplus_sp._nS315bin44</td>
+      <td>China: Lake Qinghai</td>
+      <td>38.229771 N 90.697681 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231655.1</td>
+      <td>Desulfamplus_sp._nS315bin9</td>
+      <td>China: Lake Qinghai</td>
+      <td>38.229771 N 90.697681 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231665.1</td>
+      <td>Gammaproteobacteria_bacterium_nS315bin38</td>
+      <td>China: Lake Qinghai</td>
+      <td>38.229771 N 90.697681 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231685.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nS315bin20</td>
+      <td>China: Lake Qinghai</td>
+      <td>38.229771 N 90.697681 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231705.1</td>
+      <td>Desulfamplus_sp._nS315bin3</td>
+      <td>China: Lake Qinghai</td>
+      <td>38.229771 N 90.697681 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231715.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nS315bin24</td>
+      <td>China: Lake Qinghai</td>
+      <td>38.229771 N 90.697681 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231755.1</td>
+      <td>Magnetococcales_bacterium_nQXH2bin5</td>
+      <td>China: Innermogolia</td>
+      <td>47.69541 N 119.30422 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231775.1</td>
+      <td>Magnetococcales_bacterium_nQXH2bin1</td>
+      <td>China: Innermogolia</td>
+      <td>47.69541 N 119.30422 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231795.1</td>
+      <td>Alphaproteobacteria_bacterium_nQXH1bin1</td>
+      <td>China: Innermogolia</td>
+      <td>47.74777 N 119.33694 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231815.1</td>
+      <td>Nitrospinota_bacterium_nPCRbin9</td>
+      <td>Australia: Punkally Creek</td>
+      <td>36.23413 S 150.06798 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231825.1</td>
+      <td>SAR324_cluster_bacterium_nPCRbin7</td>
+      <td>Australia: Punkally Creek</td>
+      <td>36.23413 S 150.06798 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231855.1</td>
+      <td>Zetaproteobacteria_bacterium_nPCbin1</td>
+      <td>Australia: Painkalac Creek</td>
+      <td>38.46575 S 144.09288 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231865.1</td>
+      <td>Gammaproteobacteria_bacterium_nPCRbin5</td>
+      <td>Australia: Punkally Creek</td>
+      <td>36.23413 S 150.06798 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231885.1</td>
+      <td>SAR324_cluster_bacterium_nPCRbin10</td>
+      <td>Australia: Punkally Creek</td>
+      <td>36.23413 S 150.06798 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015231915.1</td>
+      <td>Magnetococcales_bacterium_nNGHbin2</td>
+      <td>China: Innermogolia</td>
+      <td>47.9275 N 119.54638 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231925.1</td>
+      <td>Magnetococcales_bacterium_nNGHbin14</td>
+      <td>China: Innermogolia</td>
+      <td>47.9275 N 119.54638 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231955.1</td>
+      <td>Oligoflexia_bacterium_nN3bin31</td>
+      <td>China: Innermogolia</td>
+      <td>41.549487 N 109.05952 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231965.1</td>
+      <td>Magnetococcales_bacterium_nNGHbin13</td>
+      <td>China: Innermogolia</td>
+      <td>47.9275 N 119.54638 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015231995.1</td>
+      <td>Nitrospinota_bacterium_nNGHbin12</td>
+      <td>China: Innermogolia</td>
+      <td>47.9275 N 119.54638 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232015.1</td>
+      <td>Oligoflexia_bacterium_nN3bin16</td>
+      <td>China: Innermogolia</td>
+      <td>41.549487 N 109.05952 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232025.1</td>
+      <td>Alphaproteobacteria_bacterium_nN3bin14</td>
+      <td>China: Innermogolia</td>
+      <td>41.549487 N 109.05952 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232035.1</td>
+      <td>Desulfamplus_sp._nN2-2bin5</td>
+      <td>China: Innermogolia</td>
+      <td>41.549487 N 109.05952 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232055.1</td>
+      <td>Alphaproteobacteria_bacterium_nN2-2bin2</td>
+      <td>China: Innermogolia</td>
+      <td>41.549487 N 109.05952 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232095.1</td>
+      <td>Alphaproteobacteria_bacterium_nN2-2bin1</td>
+      <td>China: Innermogolia</td>
+      <td>41.549487 N 109.05952 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232115.1</td>
+      <td>Nitrospirota_bacterium_nMYbin6</td>
+      <td>China: Beijing, Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232135.1</td>
+      <td>Magnetococcales_bacterium_nMYbin5</td>
+      <td>China: Beijing, Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232145.1</td>
+      <td>Nitrospirota_bacterium_nMYbin4</td>
+      <td>China: Beijing, Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232165.1</td>
+      <td>Nitrospirota_bacterium_nMYbin3</td>
+      <td>China: Beijing, Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232185.1</td>
+      <td>Nitrospirota_bacterium_nMYbin2</td>
+      <td>China: Beijing, Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232195.1</td>
+      <td>Nitrospirota_bacterium_nMYbin1</td>
+      <td>China: Beijing, Lake Miyun</td>
+      <td>40.48874 N 117.00714 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232235.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nMBPbin3</td>
+      <td>Australia: Mount Beauty Pondage</td>
+      <td>36.73874 S 147.16443 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232245.1</td>
+      <td>Magnetococcales_bacterium_nMBPbin6</td>
+      <td>Australia: Mount Beauty Pondage</td>
+      <td>36.73874 S 147.16443 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232255.1</td>
+      <td>Oligoflexia_bacterium_nKLKbin5</td>
+      <td>China: Qinghai, Keluke Lake</td>
+      <td>37.283722 N 96.859816 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232265.1</td>
+      <td>Magnetococcales_bacterium_nKLKbin4</td>
+      <td>China: Qinghai, Keluke Lake</td>
+      <td>37.283722 N 96.859816 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232315.1</td>
+      <td>SAR324_cluster_bacterium_nKLKbin6</td>
+      <td>China: Qinghai, Keluke Lake</td>
+      <td>37.283722 N 96.859816 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232335.1</td>
+      <td>Alphaproteobacteria_bacterium_nKLKbin1</td>
+      <td>China: Qinghai, Keluke Lake</td>
+      <td>37.283722 N 96.859816 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232355.1</td>
+      <td>Oligoflexia_bacterium_nKLKbin12</td>
+      <td>China: Qinghai, Keluke Lake</td>
+      <td>37.283722 N 96.859816 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232365.1</td>
+      <td>Magnetococcales_bacterium_nJSWbin3</td>
+      <td>China: Jinshawan, Yingkou</td>
+      <td>40.223972 N 122.083844 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232395.1</td>
+      <td>Magnetococcales_bacterium_nJSWbin2</td>
+      <td>China: Jinshawan, Yingkou</td>
+      <td>40.223972 N 122.083844 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232405.1</td>
+      <td>Magnetococcales_bacterium_nJSWbin1</td>
+      <td>China: Jinshawan, Yingkou</td>
+      <td>40.223972 N 122.083844 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232435.1</td>
+      <td>Alphaproteobacteria_bacterium_nJC2bin54</td>
+      <td>China: Innermogolia</td>
+      <td>41.686682 N 108.39418 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232455.1</td>
+      <td>Desulfamplus_sp._nJC1bin9</td>
+      <td>China: Innermogolia</td>
+      <td>41.687541 N 108.393862 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232465.1</td>
+      <td>Desulfamplus_sp._nHLHbin7</td>
+      <td>China: Innermogolia</td>
+      <td>49.06944 N 117.75694 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232485.1</td>
+      <td>Alphaproteobacteria_bacterium_nJC1bin3</td>
+      <td>China: Innermogolia</td>
+      <td>41.687541 N 108.393862 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232515.1</td>
+      <td>Desulfobacterales_bacterium_nHLHbin5</td>
+      <td>China: Innermogolia</td>
+      <td>49.06944 N 117.75694 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232535.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nHLHbin2</td>
+      <td>China: Innermogolia</td>
+      <td>49.06944 N 117.75694 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232555.1</td>
+      <td>Desulfamplus_sp._nHGRbin17</td>
+      <td>China: Innermogolia</td>
+      <td>41.573047 N 108.313566 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232565.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nHGRbin18</td>
+      <td>China: Innermogolia</td>
+      <td>41.573047 N 108.313566 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232575.1</td>
+      <td>Candidatus_Riflebacteria_bacterium_nHGRbin4</td>
+      <td>China: Innermogolia</td>
+      <td>41.573047 N 108.313566 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232615.1</td>
+      <td>Nitrospirota_bacterium_nHCHbin2</td>
+      <td>China: Xian city moat</td>
+      <td>34.25287 N 108.92187 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232635.1</td>
+      <td>Magnetococcales_bacterium_nHCHbin1</td>
+      <td>China: Xian city moat</td>
+      <td>34.25287 N 108.92187 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232645.1</td>
+      <td>Magnetococcales_bacterium_nHA5abin3</td>
+      <td>China: Hongan</td>
+      <td>31.290556 N 114.913333 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232675.1</td>
+      <td>Magnetococcales_bacterium_nHAa3bin1</td>
+      <td>China: Hongan</td>
+      <td>31.174289 N 114.543941 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232685.1</td>
+      <td>Magnetococcales_bacterium_nHA5abin2</td>
+      <td>China: Hongan</td>
+      <td>31.290556 N 114.913333 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232705.1</td>
+      <td>Magnetococcales_bacterium_nHA4bin8</td>
+      <td>China: Hongan</td>
+      <td>31.292222 N 114.921667 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232735.1</td>
+      <td>Oligoflexales_bacterium_nHA4bin4</td>
+      <td>China: Hongan</td>
+      <td>31.292222 N 114.921667 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232755.1</td>
+      <td>Magnetococcales_bacterium_nHA3dbin2</td>
+      <td>China: Hongan</td>
+      <td>31.173819 N 114.547642 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232765.1</td>
+      <td>Magnetococcales_bacterium_nHA4bin1</td>
+      <td>China: Hongan</td>
+      <td>31.292222 N 114.921667 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232795.1</td>
+      <td>Magnetococcales_bacterium_nGRbin4</td>
+      <td>Australia: Gellibrand River</td>
+      <td>38.69715 S 143.15477 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232815.1</td>
+      <td>Magnetococcales_bacterium_nHA3dbin1</td>
+      <td>China: Hongan</td>
+      <td>31.173819 N 114.547642 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232825.1</td>
+      <td>Magnetococcales_bacterium_nHA1bin2</td>
+      <td>China: Hongan</td>
+      <td>31.295 N 114.916944 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015232855.1</td>
+      <td>Fibrobacteria_bacterium_nGRbin1</td>
+      <td>Australia: Gellibrand River</td>
+      <td>38.69715 S 143.15477 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232865.1</td>
+      <td>Magnetococcales_bacterium_nER1bin6</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5338 S 143.97832 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232875.1</td>
+      <td>Candidatus_Magnetomorum_sp._nER2bin1</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5359 S 143.97478 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232915.1</td>
+      <td>Magnetococcales_bacterium_nER1bin1</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5338 S 143.97832 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232935.1</td>
+      <td>Desulfamplus_sp._nER1bin2</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5338 S 143.97832 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232945.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin7</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015232955.1</td>
+      <td>Gammaproteobacteria_bacterium_nER1bin10</td>
+      <td>Australia: Erskine River</td>
+      <td>38.5338 S 143.97832 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_015232995.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin8</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233015.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin6</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233035.1</td>
+      <td>Magnetococcales_bacterium_nDJH8bin2</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233045.1</td>
+      <td>Nitrospirota_bacterium_nDJH8bin13</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233055.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH8bin5</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233065.1</td>
+      <td>Desulfovibrionaceae_bacterium_nDJH8bin10</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.48944 N 109.99638 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233115.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin5</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233135.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH6bin20</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233145.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin28</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233155.1</td>
+      <td>Candidatus_Riflebacteria_bacterium_nDJH6bin19</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233165.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin18</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233195.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin14</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233235.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH6bin13</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233245.1</td>
+      <td>Nitrospirota_bacterium_nDJH6bin1</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233265.1</td>
+      <td>Nitrospirota_bacterium_nDJH5bin4</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.490422 N 109.995886 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233285.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH5bin8</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.490422 N 109.995886 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233295.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH6bin12</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49055 N 109.99611 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233335.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH2bin18</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49194 N 109.99472 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233355.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH2bin9</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49194 N 109.99472 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233365.1</td>
+      <td>Nitrospirota_bacterium_nDJH15bin8</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.485181 N 110.001483 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233375.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH2bin13</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49194 N 109.99472 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233395.1</td>
+      <td>Desulfovibrionaceae_bacterium_nDJH2bin10</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.49194 N 109.99472 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233405.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH15bin6</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.485181 N 110.001483 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233455.1</td>
+      <td>Nitrospirota_bacterium_nDJH15bin2</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.485181 N 110.001483 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233465.1</td>
+      <td>Candidatus_Magnetobacteriaceae_bacterium_nDJH14bin9</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483503 N 110.000844 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233485.1</td>
+      <td>Nitrospirota_bacterium_nDJH14bin7</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483503 N 110.000844 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233495.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH15bin13</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.485181 N 110.001483 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233515.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH15bin4</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.485181 N 110.001483 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233555.1</td>
+      <td>Nitrospirota_bacterium_nDJH14bin5</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483503 N 110.000844 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233565.1</td>
+      <td>Candidatus_Riflebacteria_bacterium_nDJH14bin3</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483503 N 110.000844 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233585.1</td>
+      <td>Alphaproteobacteria_bacterium_nDJH14bin10</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483503 N 110.000844 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233615.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin3</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233625.1</td>
+      <td>Deltaproteobacteria_bacterium_nDJH13bin5</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233655.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin21</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233675.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH13bin20</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233685.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin15</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233705.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nDJH13bin13</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233725.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin1</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233755.1</td>
+      <td>Desulfamplus_sp._nDH2bin3</td>
+      <td>China: Lake East</td>
+      <td>30.555833 N 114.411389 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233765.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nCal1bin2</td>
+      <td>Australia: Lake Catani</td>
+      <td>36.73426 S 146.81119 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233785.1</td>
+      <td>Magnetococcales_bacterium_nCLbin10</td>
+      <td>Australia: Corunna Lake</td>
+      <td>38.23694 S 144.42936 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233895.1</td>
+      <td>Nitrospirota_bacterium_nDJH13bin19</td>
+      <td>China: Dajiu Lake</td>
+      <td>31.483672 N 110.000694 E</td>
+      <td>bog/peatland (acidic)</td>
+      <td>Acidic Peatland</td>
+    </tr>
+    <tr>
+      <td>GCA_015233905.1</td>
+      <td>Magnetococcales_bacterium_nDH2bin7</td>
+      <td>China: Lake East</td>
+      <td>30.555833 N 114.411389 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233935.1</td>
+      <td>Magnetococcales_bacterium_nDH2bin6</td>
+      <td>China: Lake East</td>
+      <td>30.555833 N 114.411389 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233945.1</td>
+      <td>Magnetococcales_bacterium_nDC0425bin2</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233965.1</td>
+      <td>Magnetococcales_bacterium_nDC0425bin4</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015233985.1</td>
+      <td>Nitrospirota_bacterium_nDC0425bin1</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015234015.1</td>
+      <td>Magnetococcales_bacterium_nDCbin4</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015234035.1</td>
+      <td>Magnetococcales_bacterium_nDCbin2</td>
+      <td>China: Lake Dianchi</td>
+      <td>24.908133 N 102.74605 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015234045.1</td>
+      <td>Magnetococcales_bacterium_nCLbin6</td>
+      <td>Australia: Corunna Lake</td>
+      <td>38.23694 S 144.42936 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015234065.1</td>
+      <td>Candidatus_Omnitrophota_bacterium_nCal2bin1</td>
+      <td>Australia: Lake Catani</td>
+      <td>36.73274 S 146.81226 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015234085.1</td>
+      <td>Nitrospinota_bacterium_nARSLQbin3</td>
+      <td>China: Innermogolia</td>
+      <td>47.19788 N 119.92877 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_015234115.1</td>
+      <td>Magnetococcales_bacterium_nARSLQbin1</td>
+      <td>China: Innermogolia</td>
+      <td>47.19788 N 119.92877 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_018606785.1</td>
+      <td>Candidatus_Magnetobacterium_cryptolimnobacter_XYR</td>
+      <td>China: Shaanxi, Xianyang Lake</td>
+      <td>34.33 N 108.72 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_018606805.1</td>
+      <td>Candidatus_Magnetomicrobium_cryptolimnococcus_XYC</td>
+      <td>China: Shaanxi, Xianyang Lake</td>
+      <td>34.33 N 108.72 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_020523885.1</td>
+      <td>Candidatus_Liberimonas_magnetica_DUR002</td>
+      <td>Russia: Moscow Region, Durykino ravine</td>
+      <td>56.048889 N 37.164722 E</td>
+      <td>bog/peatland (brackish)</td>
+      <td>bog soil</td>
+    </tr>
+    <tr>
+      <td>GCA_020523905.1</td>
+      <td>Candidatus_Obscuribacterium_magneticum_DUR003</td>
+      <td>Russia: Moscow Region, Durykino ravine</td>
+      <td>56.048889 N 37.164722 E</td>
+      <td>bog/peatland (brackish)</td>
+      <td>bog soil</td>
+    </tr>
+    <tr>
+      <td>GCA_022321325.1</td>
+      <td>Candidatus_Magnetominusculus_sp._LBB02</td>
+      <td>Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe</td>
+      <td>55.63 N 39.74 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_022321425.1</td>
+      <td>Syntrophales_bacterium_LBB04</td>
+      <td>Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe</td>
+      <td>55.63 N 39.74 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_024275975.1</td>
+      <td>Nitrospirota_bacterium_Dive96_bin3.242</td>
+      <td>Indian Ocean: Longqi hydrothermal vent field, ultraslow-spreading Southwestern Indian Ridge</td>
+      <td>37.78 S 49.64 E</td>
+      <td>thermal environment (hydrothermal vent chimney)</td>
+      <td>hydrothermal vent chimney</td>
+    </tr>
+    <tr>
+      <td>GCA_029001845.1</td>
+      <td>Candidatus_Magnetocorallium_paracelense_XS-1</td>
+      <td>China: the Paracel Islands</td>
+      <td>16.57 N 112.20 E</td>
+      <td>marine</td>
+      <td>coral reef sediments</td>
+    </tr>
+    <tr>
+      <td>GCA_040325905.1</td>
+      <td>Candidatus_Magnetobacterium_sp._LHC-1</td>
+      <td>China: Lake Lianhuachi, Beijing</td>
+      <td>39.89 N 116.30 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_900093605.1</td>
+      <td>Candidatus_Terasakiella_magnetica_PR-1</td>
+      <td>France: Pointe Rouge Marina in Marseille</td>
+      <td>43.2456008291325 N 5.364499897128043 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_900170035.1</td>
+      <td>Desulfamplus_magnetovallimortis_BW-1</td>
+      <td>USA: Badwater Basin at Death Valley National Park, California</td>
+      <td>36.2302 N 116.7674 W</td>
+      <td>brackish</td>
+      <td>brackish desert spring</td>
+    </tr>
+    <tr>
+      <td>GCA_900659855.1</td>
+      <td>Candidatus_Desulfarcum_epimagneticum_CR-1</td>
+      <td>France: Carry-le-Rouet</td>
+      <td>43.334222 N 5.175278 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>GCA_902725215.1</td>
+      <td>Rhodospirillaceae_bacterium_LM-1</td>
+      <td>Boulder Beach, Lake Mead, Nevada</td>
+      <td>36.0427571 N 114.7999856 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_902729415.1</td>
+      <td>Candidatus_Terasakiella_magnetica_PR1</td>
+      <td>France: Couze Pavin, Auvergne</td>
+      <td>45.5097222 N 2.90349999 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_902729425.1</td>
+      <td>Magnetospirillum_sp._SS-4</td>
+      <td>Alamo River near the Salton Sea, California</td>
+      <td>33.201109 N 115.602421 W</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_902729435.1</td>
+      <td>Magnetospirillum_sp._UT-4</td>
+      <td>Pond near Zion National Park, Utah</td>
+      <td>37.2452462 N 113.1446629 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_902729445.1</td>
+      <td>Magnetospirillum_sp._LM-5</td>
+      <td>Boulder Beach, Lake Mead, Nevada</td>
+      <td>36.0427571 N 114.7999856 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_937425535.1</td>
+      <td>Rhodovastum_atsumiense_G2-11</td>
+      <td>Japan: Atsumi Peninsula</td>
+      <td>34.7166667 N 137.366666 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>IMG_2264265205</td>
+      <td>Planctomycetes_bacterium_SCGC_JGI090-P21</td>
+      <td>Greece: Aitoliko Lagoon</td>
+      <td>38.4825 N 21.315 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>IMG_2651870060</td>
+      <td>Unclassified_Nitrospina_Bin_25</td>
+      <td>northern gulf of mexico hypoxic zone</td>
+      <td>25.559724256587067 N 90.38104391023542 W</td>
+      <td>marine</td>
+      <td>marine (hypoxia)</td>
+    </tr>
+    <tr>
+      <td>IMG_3300015153</td>
+      <td>Omnitrophica_bacterium_SCGC_AG-290-C17</td>
+      <td>USA: Nevada</td>
+      <td>36.9648 N 116.7241 W</td>
+      <td>freshwater</td>
+      <td>freshwater, cold creek</td>
+    </tr>
+    <tr>
+      <td>IMG_3300022116</td>
+      <td>Uncultured_microorganism_SbSrfc_SA12_01_D19</td>
+      <td>Sweden: Oskarshamn</td>
+      <td>57.4344 N 16.6600 E</td>
+      <td>subsurface/deep subsurface</td>
+      <td>deep subsurface, saline groundwater environment</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036956.1</td>
+      <td>uncultured_Bdellovibrionaceae_bacterium_SFLP_MTB_Ki1-2-2m_bin5</td>
+      <td>Sweden: lake Ki1</td>
+      <td>67.93 N 20.36 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036957.1</td>
+      <td>uncultured_Bdellovibrionaceae_bacterium_SFLP_MTB_Ki1-2-7m_bin20</td>
+      <td>Sweden: lake Ki1</td>
+      <td>67.93 N 20.36 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036958.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_Ki3-D4_bin3</td>
+      <td>Sweden: lake Haukij?rvi</td>
+      <td>67.65 N 21.17 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036959.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-3-65m_bin36</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036960.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-5-9m_bin60</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036961.1</td>
+      <td>uncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-7-9m_bin42</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036962.1</td>
+      <td>uncultured_Oligoflexia_bacterium_SFLP_MTB_LJ-13-9m_bin1</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036963.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Day2-5_bin11</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036964.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Day2-6_bin13</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036965.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Ja1-D5_bin27</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036966.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Ki1-2-7m_bin29</td>
+      <td>Sweden: lake Ki1</td>
+      <td>67.93 N 20.36 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036967.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Umea1p4_bin7</td>
+      <td>Sweden: lake N?stj?rnen (711940-164576)</td>
+      <td>64.15 N 18.8 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036968.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc080925-7m_bin41</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036969.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090519-7m_bin30</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036970.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090519-8m_bin12</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036971.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090721-6m_bin27</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036972.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090721-7m_bin30</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036973.1</td>
+      <td>uncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090907-6m_bin20</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036974.1</td>
+      <td>uncultured_Geobacterales_bacterium_SFLP_MTB_A4_bin1</td>
+      <td>Canada: pond SAS2A</td>
+      <td>55.23 N 77.7 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036975.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ja1-D5_bin9</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036976.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ki2-D4_bin37</td>
+      <td>Sweden: lake Kiruna 754378??69136</td>
+      <td>67.92 N 20.37 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036977.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-15m_bin6</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036978.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-4m_bin11</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036979.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ja1-D4_bin17</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036980.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-4m_bin33</td>
+      <td>Finland: lake Lovoj?rvi</td>
+      <td>61.08 N 25.03 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036981.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_AM-lipid-02-D5_bin1</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036982.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_AM4_bin5</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036983.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_A3_bin18</td>
+      <td>Canada: pond SAS2A</td>
+      <td>55.23 N 77.7 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036984.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_A4_bin21</td>
+      <td>Canada: pond SAS2A</td>
+      <td>55.23 N 77.7 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036985.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_D3_bin2</td>
+      <td>Canada: pond SAS2B</td>
+      <td>55.23 N 77.7 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036986.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_D4_bin5</td>
+      <td>Canada: pond SAS2B</td>
+      <td>55.23 N 77.7 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036987.1</td>
+      <td>uncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_E5_bin6</td>
+      <td>Canada: pond SAS2D</td>
+      <td>55.23 N 77.69 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036988.1</td>
+      <td>uncultured_Smithellaceae_bacterium_SFLP_MTB_Loc090519-8-7m_bin35</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036989.1</td>
+      <td>uncultured_Syntrophales_bacterium_SFLP_MTB_Day2-5_bin12</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036990.1</td>
+      <td>uncultured_Syntrophales_bacterium_SFLP_MTB_Day2-6_bin17</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036991.1</td>
+      <td>uncultured_Syntrophales_bacterium_SFLP_MTB_Ja1-D5_bin7</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036992.1</td>
+      <td>uncultured_Syntrophorhabdaceae_bacterium_SFLP_MTB_Ja1-D5_bin2</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036993.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-01-D7_bin11</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036994.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-01-D8_bin17</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036995.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-02-D6_bin11</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036996.1</td>
+      <td>uncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-02-D7_bin42</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036997.1</td>
+      <td>uncultured_Hydrogenedentiales_bacterium_SFLP_MTB_Ki3-D4_bin17</td>
+      <td>Sweden: lake Haukij?rvi</td>
+      <td>67.65 N 21.17 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036998.1</td>
+      <td>uncultured_Polyangiaceae_bacterium_SFLP_MTB_KT4_bin17</td>
+      <td>Sweden: lake Lomtj?rnan (703480-142137)</td>
+      <td>63.35 N 14.46 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000036999.1</td>
+      <td>uncultured_Omnitrophota_bacterium_SFLP_MTB_Ki1-2-7m_bin21</td>
+      <td>Sweden: lake Ki1</td>
+      <td>67.93 N 20.36 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037000.1</td>
+      <td>uncultured_Omnitrophota_bacterium_SFLP_MTB_Ki2-D4_bin23</td>
+      <td>Sweden: lake Kiruna 754378??69136</td>
+      <td>67.92 N 20.37 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037001.1</td>
+      <td>uncultured_Omnitrophales_bacterium_SFLP_MTB_AM5_bin22</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037002.1</td>
+      <td>uncultured_Omnitrophales_bacterium_SFLP_MTB_AM-2014-D8_bin43</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037003.1</td>
+      <td>uncultured_Omnitrophales_bacterium_SFLP_MTB_MJ4_bin9</td>
+      <td>Finland: lake Mekkoj?rvi</td>
+      <td>61.23 N 25.14 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037004.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_AM-2014-D3_bin8</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037005.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_AM-2014-D4_bin6</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037006.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_VK3_bin11</td>
+      <td>Finland: lake Valkea Kotinen</td>
+      <td>61.24 N 25.06 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037007.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_Umea3p3_bin40</td>
+      <td>Sweden: lake Bj?rntj?rnan (711632-164487)</td>
+      <td>64.12 N 18.78 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037008.1</td>
+      <td>uncultured_Azospirillaceae_bacterium_SFLP_MTB_Umea3p4_bin32</td>
+      <td>Sweden: lake Bj?rntj?rnan (711632-164487)</td>
+      <td>64.12 N 18.78 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037009.1</td>
+      <td>uncultured_Magnetospirillum_SFLP_MTB_Loc080925-5-5m_bin37</td>
+      <td>Switzerland: lake Loclat</td>
+      <td>47.02 N 7.0 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037010.1</td>
+      <td>uncultured_Phaeospirillum_SFLP_MTB_AM-lipid-02-D5_bin40</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037011.1</td>
+      <td>uncultured_Phaeospirillum_SFLP_MTB_VK2_bin2</td>
+      <td>Finland: lake Valkea Kotinen</td>
+      <td>61.24 N 25.06 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037012.1</td>
+      <td>uncultured_Phaeospirillum_SFLP_MTB_E3_bin4</td>
+      <td>Canada: pond SAS2C</td>
+      <td>55.23 N 77.7 W</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037013.1</td>
+      <td>uncultured_Telmatospirillum_SFLP_MTB_VK2_bin28</td>
+      <td>Finland: lake Valkea Kotinen</td>
+      <td>61.24 N 25.06 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037014.1</td>
+      <td>uncultured_Telmatospirillum_SFLP_MTB_AM-2014-D4_bin5</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037015.1</td>
+      <td>uncultured_Telmatospirillum_SFLP_MTB_AM-lipid-02-D5_bin20</td>
+      <td>Finland: lake Alinen Mustaj?rvi</td>
+      <td>61.21 N 25.11 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037016.1</td>
+      <td>uncultured_gamma_proteobacterium_SFLP_MTB_KR4_bin15</td>
+      <td>Finland: lake Keskinen Rajaj?rvi</td>
+      <td>61.22 N 25.22 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037017.1</td>
+      <td>uncultured_gamma_proteobacterium_SFLP_MTB_KR4_bin9</td>
+      <td>Finland: lake Keskinen Rajaj?rvi</td>
+      <td>61.22 N 25.22 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LMSG_G000037018.1</td>
+      <td>uncultured_Magnetaquicoccaceae_bacterium_SFLP_MTB_Umea3p4_bin52</td>
+      <td>Sweden: lake Bj?rntj?rnan (711632-164487)</td>
+      <td>64.12 N 18.78 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>LO017727</td>
+      <td>Candidatus_Magnetococcus_massalia_strain_MO-1</td>
+      <td>France: Pointe Rouge Marina in Marseille</td>
+      <td>43.2456008291325 N 5.364499897128043 E</td>
+      <td>marine</td>
+      <td>marine</td>
+    </tr>
+    <tr>
+      <td>RAST_1898112</td>
+      <td>Rhodospirillaceae_bacterium_MAG_01419_mvb_30</td>
+      <td>Greece: Etoliko Lagoon</td>
+      <td>38.4825 N 21.315 E</td>
+      <td>brackish</td>
+      <td>brackish</td>
+    </tr>
+    <tr>
+      <td>GCA_022760095.1</td>
+      <td>Candidatus_Magnetoovum_sp._WYHC-5</td>
+      <td>China: Lake Weiyanghu</td>
+      <td>34.40 N 108.99 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_036937345.1</td>
+      <td>Chromatiales_bacterium_YYHR-1</td>
+      <td>China: Yeya Lake</td>
+      <td>40.406861 N 115.845167 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908085.1</td>
+      <td>Magnetococcus_sp._YQC-5</td>
+      <td>China: Yuqiao Lake</td>
+      <td>40.041111 N 117.455833 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908095.1</td>
+      <td>Nitrospirae_bacterium_YQR-1</td>
+      <td>China: Yuqiao Lake</td>
+      <td>40.041111 N 117.455833 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908105.1</td>
+      <td>Magnetococcus_sp._YQC-9</td>
+      <td>China: Yuqiao Lake</td>
+      <td>40.041111 N 117.455833 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908125.1</td>
+      <td>Magnetococcus_sp._XQGC-1</td>
+      <td>China: Xingqinggong Lake</td>
+      <td>34.263833 N 108.969250 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908135.1</td>
+      <td>Magnetococcus_sp._YQC-3</td>
+      <td>China: Yuqiao Lake</td>
+      <td>40.041111 N 117.455833 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908285.1</td>
+      <td>Alphaproteobacteria_bacterium_YQV-1</td>
+      <td>China: Yuqiao Lake</td>
+      <td>40.041111 N 117.455833 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908345.1</td>
+      <td>Magnetospirillum_sp._WYHS-4</td>
+      <td>China: Weiyanghu Lake</td>
+      <td>34.403361 N 108.985944 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908355.1</td>
+      <td>Gammaproteobacteria_bacterium_SHHR-1</td>
+      <td>China: Fuzhou Saltern</td>
+      <td>39.675308 N 121.992772 E</td>
+      <td>hypersaline</td>
+      <td>hypersaline</td>
+    </tr>
+    <tr>
+      <td>GCA_039908385.1</td>
+      <td>Magnetococcus_sp._THC-1_WYH</td>
+      <td>China: Weiyanghu Lake</td>
+      <td>34.403361 N 108.985944 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908395.1</td>
+      <td>Magnetococcus_sp._WYHC-3</td>
+      <td>China: Weiyanghu Lake</td>
+      <td>34.403361 N 108.985944 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908505.1</td>
+      <td>Nitrospirota_bacterium_MYC-10</td>
+      <td>China: Miyun Lake</td>
+      <td>40.519917 N 116.835278 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908525.1</td>
+      <td>Magnetococcus_sp._MYC-9</td>
+      <td>China: Miyun Lake</td>
+      <td>40.519917 N 116.835278 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908535.1</td>
+      <td>Magnetococcus_sp._DMHC-6</td>
+      <td>China: Daminghu Lake</td>
+      <td>36.671944 N 117.021814 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908555.1</td>
+      <td>Magnetococcus_sp._DMHC-8</td>
+      <td>China: Daminghu Lake</td>
+      <td>36.671944 N 117.021814 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+    <tr>
+      <td>GCA_039908575.1</td>
+      <td>Magnetococcus_sp._DMHC-1</td>
+      <td>China: Daminghu Lake</td>
+      <td>36.671944 N 117.021814 E</td>
+      <td>freshwater</td>
+      <td>freshwater</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+    </div>
+</div>
+<script>
+    function getParam(param){
+        return new URLSearchParams(window.location.search).get(param);
+    }
+
+    let table = new DataTable('#myTable', {scrollX: 1000,});
+//     let search_lable = document.querySelector('#myTable_filter').querySelector('label')
+//     let labletext = search_lable.innerHTML.replace('Search:', 'Filter:')
+//     search_lable.innerHTML=labletext
+    let kw = getParam("search")
+    if (kw) {
+        table.search(kw)
+        table.draw()
+    }
+    
+</script>
+
+    </main>
+
+    <script src="/MTBdatabase/static/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

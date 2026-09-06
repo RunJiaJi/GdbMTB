@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MTB genomic database">
+    <meta name="author" content="jirunjia@gmail.com">
+    <title>Genomic database of MTB</title>
+
+    <link rel="stylesheet" type="text/css" href="/MTBdatabase/static/dist/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/MTBdatabase/static/brand/11.png">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    
+
+    <style>
+        .carousel-control-next,
+        .carousel-control-prev,
+        .carousel-indicators {
+          filter: invert(100%);
+        }
+        /* .carousel img {
+            width: auto;
+            height: 100%;
+        } */
+        .carousel-caption {
+            color: black;
+        }
+        .error {
+            color: red;
+        }
+        
+        #myTable_filter {
+            margin-bottom: 1rem;
+        }
+        #myTable_paginate {
+            margin-top: 0.5rem;
+            font-size:small;
+        }
+        #myTable_info {
+            margin-top: 0.5rem;
+            font-size:small;
+        }
+        #cardHeader {
+            font-size:large;
+            font-weight: bold;
+        }
+
+        #zoom {
+            width: 100%;
+            height: 100%;
+            transform-origin: 0px 0px;
+            transform: scale(1) translate(0px, 0px);
+            /* cursor: grab; */
+        }
+        div#zoom > svg {
+            width: 100%;
+            height: auto;
+        }
+        table {
+            table-layout: fixed;
+            white-space: nowrap;
+        }
+        
+    </style>
+  
+    
+        <title>GdbMTB</title>
+    
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4.17.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+
+  </head>
+
+  <body>
+    <header class="d-flex flex-wrap px-3 border-bottom navbar-fixed-top bg-dark">
+        <div class="container">
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <div class="container-fluid">
+                <a class="navbar-brand" href="/MTBdatabase/">GdbMTB</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                          <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Browser
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/QualityandFeature/">Quality and feature</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/classification/">Classification</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/reference/">Reference</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/EnvironmentalMetadata/">Environmental metadata</a></li>
+                              <li><a class="dropdown-item" href="/MTBdatabase/browser/MagnetosomeGeneClusters/">Magnetosome gene clusters</a></li>
+                            </ul>
+                          </li>
+                        </ul>
+                    </div>
+                    <div class="collapse navbar-collapse " id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Tree
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="/MTBdatabase/tree-tree/">Tree</a></li>                                    
+                                    <li><a class="dropdown-item" href="/MTBdatabase/tree-taxa/">Taxa</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/statistics/">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/downloads/">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/MTBdatabase/about/">About</a>
+                    </li>
+                    </ul>
+                    
+                </div>
+                </div>
+            </nav>
+        </div>
+
+    </header>
+
+    <main style="padding-top: 70px;">
+        
+
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+<style>
+  #chartdiv {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  }
+</style>
+
+<div class="container-fluid" style="height: 90vh;">
+  <div class="d-flex flex-row justify-content-evenly align-items-center h-100">
+    <div id="chartdiv" style="width: 50%;"></div>
+    <div class="container mt-4 d-flex align-items-center justify-content-center " style="width: 50%; height: 100%; position: relative;">
+      <div class="card text-black bg-light shadow-lg rounded p-2" style="height: 60%; width: 100%;">
+        <div class="card-body d-flex flex-column justify-content-center">
+          <!-- <img src="/MTBdatabase/static/figure/rect8364_.svg" class="img-fluid" alt="..."> -->
+          <h4 class="text-center"><span class="text-decoration-underline">G</span>enomic <span class="text-decoration-underline">d</span>ata<span class="text-decoration-underline">b</span>ase of <span class="text-decoration-underline">M</span>agneto<span class="text-decoration-underline">t</span>actic <span class="text-decoration-underline">B</span>acteria</h4>
+          <h3 class="text-center" style="font-weight: bold;">GdbMTB</h3>
+
+        </div>
+      </div>
+    </div>    
+               
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+// Create root element
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+var root = am5.Root.new("chartdiv");
+
+
+// Set themes
+// https://www.amcharts.com/docs/v5/concepts/themes/
+root.setThemes([
+am5themes_Animated.new(root)
+]);
+
+// Create the map chart
+// https://www.amcharts.com/docs/v5/charts/map-chart/
+var chart = root.container.children.push(am5map.MapChart.new(root, {
+panX: "rotateX",
+panY: "none",
+projection: am5map.geoOrthographic(),
+paddingBottom: 20,
+paddingTop: 20,
+paddingLeft: 20,
+paddingRight: 20
+}));
+
+// Create main polygon series for countries
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+geoJSON: am5geodata_worldLow
+}));
+
+polygonSeries.mapPolygons.template.setAll({
+fill: am5.color(0x333333),
+stroke: am5.color(0xffffff),
+strokeWidth: 0.03,
+});
+
+// polygonSeries.mapPolygons.template.states.create("hover", {
+//   fill: root.interfaceColors.get("primaryButtonHover")
+// });
+
+// Create series for background fill
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
+var backgroundSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
+backgroundSeries.mapPolygons.template.setAll({
+fill: root.interfaceColors.get("alternativeBackground"),
+fillOpacity: 0.1,
+strokeOpacity: 0,
+});
+backgroundSeries.data.push({
+geometry: am5map.getGeoRectangle(90, 180, -90, -180)
+});
+
+// Create graticule series
+// https://www.amcharts.com/docs/v5/charts/map-chart/graticule-series/
+// var graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
+// graticuleSeries.mapLines.template.setAll({ strokeOpacity: 0.1, stroke: root.interfaceColors.get("alternativeBackground") })
+
+// Create point series for markers
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-point-series/
+var pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+var colorset = am5.ColorSet.new(root, {});
+
+pointSeries.bullets.push(function() {
+var container = am5.Container.new(root, {
+  tooltipText: "{title}",
+  cursorOverStyle: "pointer"
+});
+
+// This is code to add superlink onto the city.
+// container.events.on("click", (e) => {
+//   window.location.href = e.target.dataItem.dataContext.url;
+// });
+
+var circle = container.children.push(
+  am5.Circle.new(root, {
+    radius: 4,
+    tooltipY: 0,
+    fill: am5.color(0x9D0208),
+    strokeOpacity: 0
+  })
+);
+
+
+var circle2 = container.children.push(
+  am5.Circle.new(root, {
+    radius: 4,
+    tooltipY: 0,
+    fill: am5.color(0xD00000),
+    strokeOpacity: 0,
+    tooltipText: "{title}"
+  })
+);
+
+circle.animate({
+  key: "scale",
+  from: 2,
+  to: 4,
+  duration: 1800,
+  easing: am5.ease.out(am5.ease.cubic),
+  loops: Infinity
+});
+circle.animate({
+  key: "opacity",
+  from: 0.3,
+  to: 0.2,
+  duration: 1800,
+  easing: am5.ease.out(am5.ease.cubic),
+  loops: Infinity
+});
+
+return am5.Bullet.new(root, {
+  sprite: container
+});
+});
+
+var cities = [{"latitude": 35.6932202, "longitude": 139.5100092, "title": "Japan: Koganei, Tokyo\nParamagnetospirillum_magneticum_AMB-1"}, {"latitude": 34.17484403, "longitude": 135.2371394, "title": "Japan: Kameno river\nSolidesulfovibrio_magneticus_RS-1"}, {"latitude": 41.44221139, "longitude": -71.44088823, "title": "USA: Pettaquamscutt Estuary, Rhode Island\nMagnetococcus_marinus_MC-1"}, {"latitude": 43.894, "longitude": 42.7209, "title": "Russia:Krasnodar krai\nParamagnetospirillum_caucaseum_SO-1"}, {"latitude": 49.67280586, "longitude": -124.0288134, "title": "USA: Sakinaw Lake\nLatescibacteria_bacterium_SCGC_AAA252-B13"}, {"latitude": 54.10188088, "longitude": 13.38919751, "title": "Germany: Ryck River\nMagnetospirillum_gryphiswaldense_MSR-1_v2"}, {"latitude": -22.8333, "longitude": -42.2166, "title": "Brazil: Araruama Lagoon\nCandidatus_Magnetoglobus_multicellularis_str._Araruama"}, {"latitude": 40.49863762, "longitude": 116.9916319, "title": "China: Lake Miyun, Beijing\nCandidatus_Magnetobacterium_casense_MYR-1"}, {"latitude": 42.59672121, "longitude": -70.76937574, "title": "USA: Cedar Swamp, Massachusetts\nParamagnetospirillum_magnetotacticum_MS-1"}, {"latitude": 47.86944, "longitude": 12.398015, "title": "Germany: Lake Chiemsee, Bavaria\nCandidatus_Omnitrophus_magneticus_SKK-01"}, {"latitude": 47.86944, "longitude": 12.398015, "title": "Germany: Lake Chiemsee, Bavaria\nCandidatus_Magnetoovum_chiemensis_CS-04"}, {"latitude": 47.86944, "longitude": 12.398015, "title": "Germany: Lake Chiemsee, Bavaria\nCandidatus_Magnetobacterium_bavaricum_TM-1"}, {"latitude": 36.05239497, "longitude": 120.3371792, "title": "Huiquan Bay, Qingdao, China\nMagnetospira_sp._QH-2"}, {"latitude": 53.89058, "longitude": 8.678464, "title": "Germany:Wadden Sea, near Cuxhaven\nCandidatus_Magnetomorum_sp._HK-1"}, {"latitude": 34.7414, "longitude": -77.1234, "title": "USA: White Oak River Estuary, North Carolina\nNitrospira_bacterium_SG8_35_4"}, {"latitude": 34.7414, "longitude": -77.1234, "title": "USA: White Oak River Estuary, North Carolina\nPlanctomycetes_bacterium_SM23_25"}, {"latitude": 34.2527, "longitude": 108.9203, "title": "China: Xi\u0027an City moat\nMagnetospirillum_sp._XM-1_XM1"}, {"latitude": 34.25287, "longitude": 108.92187, "title": "China: city moat, Xi\u0027an\nCandidatus_Magnetominusculus_xianensis_HCH-1"}, {"latitude": 55.792661, "longitude": 37.409944, "title": "Russia: Moskva River\nMagnetospirillum_moscoviense_BB-1"}, {"latitude": 44.389272, "longitude": 38.336217, "title": "Russia: Pshada River\nParamagnetospirillum_marisnigri_SP-1"}, {"latitude": 41.27, "longitude": -71.04, "title": "USA: salt marsh pool, Neponset River estuary, Boston, MA\nMagnetovibrio_blakemorei_MV-1"}, {"latitude": 39.5369, "longitude": -107.7828, "title": "USA: Rifle, CO\nOmnitrophica_WOR_2_bacterium_GWA2_45_18"}, {"latitude": 39.5369, "longitude": -107.7828, "title": "USA: Rifle, CO\nOmnitrophica_WOR_2_bacterium_GWC2_45_7"}, {"latitude": 30.55, "longitude": 114.36, "title": "China: East Lake sediment, Wuhan city\nMagnetospirillum_sp._ME-1"}, {"latitude": -22.9644167, "longitude": -43.0459472, "title": "Brazil: Itaipu Lagoon, Niteroi, Rio de Janeiro State\nMagnetofaba_australis_IT-1"}, {"latitude": 24.54642326, "longitude": -46.49654979, "title": "Atlantic Ocean: North Pond\nElusimicrobiota_bacterium_NORP122"}, {"latitude": 12.23373241, "longitude": 64.40798572, "title": "Indian Ocean:Northwest Arabian Sea Upwelling Province\nMagnetovibrio_sp._ARS8"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park\nMagnetococcales_bacterium_YD0425bin7"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park\nDeltaproteobacteria_bacterium_YD0425bin50"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming\nMagnetococcales_bacterium_WMHbinv6"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming\nAlphaproteobacteria_bacterium_WMHbin7"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming\nMagnetococcales_bacterium_WMHbin3"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming\nMagnetococcales_bacterium_WMHbin1"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park\nDeltaproteobacteria_bacterium_YD0425bin51"}, {"latitude": -36.23413, "longitude": 150.06798, "title": "Australia: Punkally Creek\nCandidatus_Lambdaproteobacteria_bacterium_PCRbin3"}, {"latitude": -38.46575, "longitude": 144.09288, "title": "Australia: Painkalac Creek\nZetaproteobacteria_bacterium_PCbin4"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Lake Miyun\nNitrospirae_bacterium_MYbin6"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Lake Miyun\nNitrospirae_bacterium_MYbin3"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Lake Miyun\nNitrospirae_bacterium_MYbinv3"}, {"latitude": 34.25287, "longitude": 108.92187, "title": "China: Xi\u0027an city moat\nNitrospirota_bacterium_HCHbin1"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Lake Miyun\nNitrospirota_bacterium_MYbin2"}, {"latitude": -36.73874, "longitude": 147.16443, "title": "Australia: Mount Beauty Pondage\nCandidatus_Omnitrophota_bacterium_MBPbin6"}, {"latitude": 31.173819, "longitude": 114.547642, "title": "China: Pond, Hongan\nMagnetococcales_bacterium_HA3dbin3"}, {"latitude": 34.25287, "longitude": 108.92187, "title": "China: Xi\u0027an city moat\nMagnetococcales_bacterium_HCHbin5"}, {"latitude": 31.173819, "longitude": 114.547642, "title": "China: Pond, Hongan\nMagnetococcales_bacterium_HA3dbin1"}, {"latitude": -38.5338, "longitude": 143.97832, "title": "Australia: Erskine River\nMagnetococcales_bacterium_ER1bin7"}, {"latitude": 31.174289, "longitude": 114.543941, "title": "China: Rice field, Hongan\nMagnetococcales_bacterium_HAa3bin1"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_DCbin2"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_DC0425bin3"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nNitrospirota_bacterium_DC0425bin1"}, {"latitude": -38.5359, "longitude": 143.97478, "title": "Australia: Erskine River\nDeltaproteobacteria_bacterium_ER2bin7"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_DCbin4"}, {"latitude": -36.73426, "longitude": 146.81119, "title": "Australia: Lake Catani\nCandidatus_Omnitrophota_bacterium_Cal1bin1"}, {"latitude": 55.38, "longitude": 39.44, "title": "Russia: Moscow region\nParamagnetospirillum_kuznetsovii_LBB-42"}, {"latitude": 51.8229, "longitude": 107.6199, "title": "Russia: Uda River\nCandidatus_Magnetaquicoccus_inordinatus_UR-1"}, {"latitude": 55.63223, "longitude": 39.743775, "title": "Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe\nNitrospirales_bacterium_LBB_01"}, {"latitude": 18.2913889, "longitude": 109.349722, "title": "China:Sanya\nTerasakiella_sp._SH-1"}, {"latitude": 36.051, "longitude": -116.631, "title": "USA: Badwater Basin at Death Valley National Park, California\nEctothiorhodospiraceae_bacterium_BW-2"}, {"latitude": 33.3225996, "longitude": -115.8432155, "title": "USA: Salton Sea, California\ngamma_proteobacterium_SS-5"}, {"latitude": 30.555833, "longitude": 114.411389, "title": "China: Wuhan, East Lake\nMagnetococcales_bacterium_DH2_bin20"}, {"latitude": 30.555833, "longitude": 114.411389, "title": "China: Wuhan, East Lake\nMagnetococcales_bacterium_DH2_bin6"}, {"latitude": 35.892, "longitude": 139.368, "title": "Japan:Saitama, Suwa Pond\nFundidesulfovibrio_magnetotacticus_FSS-1"}, {"latitude": 38.03, "longitude": -122.15, "title": "USA: California\nDeltaproteobacteria_bacterium_MAG_22204_dsfv_001"}, {"latitude": 38.05, "longitude": -121.934, "title": "USA: California\nDeltaproteobacteria_bacterium_MAG_22309_dsfv_022"}, {"latitude": -1.64, "longitude": 29.05, "title": "Democratic Republic of the Congo: South-Kivu, Lake Kivu, Kabuno Bay\nDesulfuromonadales_bacterium_MAG_13126_9_058"}, {"latitude": 20.3333, "longitude": -107.0, "title": "Pacific Ocean: Eastern Tropical North Pacific\nRhodospirillaceae_bacterium_MAG_22225_2-02_112"}, {"latitude": 38.96, "longitude": -106.99, "title": "USA: Colorado\nMagnetococcales_bacterium_MAG_21055_mgc_1"}, {"latitude": 47.5028, "longitude": -93.4828, "title": "USA: Minnesota\nDeltaproteobacteria_bacterium_MAG_17996_sntb_20"}, {"latitude": 49.753, "longitude": -93.798, "title": "Canada: Ontario\nDesulfuromonadales_bacterium_MAG_21600_9_004"}, {"latitude": 49.69, "longitude": -93.718, "title": "Canada: Ontario\nDesulfuromonadales_bacterium_MAG_21601_9_030"}, {"latitude": 33.4166, "longitude": -115.9166, "title": "USA: California, Salton Sea\nPlanctomycetota_bacterium_MAG_18080_pl_157"}, {"latitude": 33.3, "longitude": -115.8, "title": "USA: California, Salton Sea\nCandidatus_Hydrogenedentota_bacterium_MAG_17963_hgd_111"}, {"latitude": 57.4344, "longitude": 16.66, "title": "Sweden: Oskarshamn\nDeltaproteobacteria_bacterium_MAG_15370_dsfb_81"}, {"latitude": 47.5028, "longitude": -93.4828, "title": "USA: Minnesota\nDeltaproteobacteria_bacterium_MAG_17929_sntb_26"}, {"latitude": 33.4166, "longitude": -115.9166, "title": "USA: California, Salton Sea\nPlanctomycetota_bacterium_MAG_17991_pl_60"}, {"latitude": 33.3, "longitude": -115.8, "title": "USA: California, Salton Sea\nCandidatus_Hydrogenedentota_bacterium_MAG_17971_hgd_130"}, {"latitude": 77.0991, "longitude": -150.2252, "title": "Arctic Ocean: Canada Basin\nNitrospinota_bacterium_MAG_09705_ntspn_70"}, {"latitude": -22.5304, "longitude": 30.6814, "title": "South Africa: Limpopo\nNitrospirota_bacterium_MAG_10313_ntr_31"}, {"latitude": 56.103, "longitude": 10.458, "title": "Denmark:Aarhus Bay\nPlanctomycetota_bacterium_MAG_11118_pl_115"}, {"latitude": 1.759, "longitude": 96.774, "title": "Indian Ocean:near North Sumatra\nDeltaproteobacteria_bacterium_MAG_09788_naph_37"}, {"latitude": 46.0072, "longitude": -89.6063, "title": "USA:Crystal Bog, Wisconsin, USA\nRhodospirillaceae_bacterium_MAG_06104_tlms_034"}, {"latitude": 19.0, "longitude": -107.0, "title": "Pacific Ocean: Eastern Tropical North Pacific\nRhodospirillaceae_bacterium_MAG_05596_2-02_51"}, {"latitude": 20.3333, "longitude": -106.0, "title": "Pacific Ocean: Eastern Tropical North Pacific\nRhodospirillaceae_bacterium_MAG_05422_2-02_14"}, {"latitude": 59.363333, "longitude": 18.119167, "title": "Sweden:KBA site, Vaertahamnen, Baltic Sea\nDeltaproteobacteria_bacterium_MAG_00792_naph_016"}, {"latitude": 46.0072, "longitude": -89.6063, "title": "USA:Crystal Bog, Wisconsin, USA\nRhodospirillaceae_bacterium_MAG_04806_tlms_2"}, {"latitude": 59.350163, "longitude": 18.107847, "title": "Sweden:KBB site, Vaertahamnen, Baltic Sea\nDeltaproteobacteria_bacterium_MAG_00241_naph_010"}, {"latitude": 48.6, "longitude": -123.5, "title": "Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00215_gam_020"}, {"latitude": 48.6, "longitude": -123.5, "title": "Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00212_gam_1"}, {"latitude": 48.6, "longitude": -123.5, "title": "Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00172_gam_018"}, {"latitude": 48.6, "longitude": -123.5, "title": "Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00188_gam_006"}, {"latitude": 48.6, "longitude": -123.5, "title": "Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00160_gam_009"}, {"latitude": 48.6, "longitude": -123.5, "title": "Canada: Saanich Inlet 48, Vancouver Island, BC\nGammaproteobacteria_bacterium_MAG_00150_gam_010"}, {"latitude": 59.363333, "longitude": 18.119167, "title": "Sweden:KBA site, Vaertahamnen, Baltic Sea\nDeltaproteobacteria_bacterium_MAG_00134_naph_006"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park, Beijing\nDesulfobacterales_bacterium_nYD0425bin6"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park, Beijing\nDesulfobacterales_bacterium_nYD0425bin5"}, {"latitude": 40.39833, "longitude": 116.67777, "title": "China: Yanqi Lake, Beijing\nAlphaproteobacteria_bacterium_nYQH56bin3"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park, Beijing\nMagnetococcales_bacterium_nYD0423bin3"}, {"latitude": 38.170074, "longitude": 90.57854, "title": "China: Aiken creek, Qinghai\nCandidatus_Omnitrophota_bacterium_nXXbin4"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park, Beijing\nMagnetococcales_bacterium_nYD0423bin2"}, {"latitude": 39.974732, "longitude": 116.368688, "title": "China: Yuandadu Park, Beijing\nMagnetococcales_bacterium_nYD0425bin13"}, {"latitude": 38.170074, "longitude": 90.57854, "title": "China: Aiken creek, Qinghai\nDesulfamplus_sp._nXXbin12"}, {"latitude": 38.170074, "longitude": 90.57854, "title": "China: Aiken creek, Qinghai\nDeltaproteobacteria_bacterium_nXXbin1"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin7"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nWRX3bin4"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin6"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin2"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin12"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin11"}, {"latitude": 48.455, "longitude": 117.63305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX3bin10"}, {"latitude": 48.23111, "longitude": 117.62277, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX2bin6"}, {"latitude": 48.23222, "longitude": 117.62305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin6"}, {"latitude": 48.23222, "longitude": 117.62305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin5"}, {"latitude": 48.23222, "longitude": 117.62305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin1"}, {"latitude": 48.23222, "longitude": 117.62305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin12"}, {"latitude": 48.23222, "longitude": 117.62305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin3"}, {"latitude": 48.23222, "longitude": 117.62305, "title": "China: Innermogolia\nMagnetococcales_bacterium_nWRX1bin11"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming, Beijing\nNitrospinota_bacterium_nWMHbin6"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming, Beijing\nAlphaproteobacteria_bacterium_nWMHbin5"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming, Beijing\nMagnetococcales_bacterium_nWMHbin2"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming, Beijing\nMagnetococcales_bacterium_nWMHbin4"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming, Beijing\nMagnetococcales_bacterium_nWMHbin1"}, {"latitude": 39.993142, "longitude": 116.30256, "title": "China: Lake Weiming, Beijing\nMagnetococcales_bacterium_nWMHbin3"}, {"latitude": -36.36013, "longitude": 150.07384, "title": "Australia: Wallaga Lake\nMagnetococcales_bacterium_nwalbin5"}, {"latitude": 41.564702, "longitude": 109.081861, "title": "China: Innermogolia\nMagnetococcales_bacterium_nW5bin3"}, {"latitude": -36.21831, "longitude": 150.12168, "title": "Australia: Waganaga Inlet\nMagnetococcales_bacterium_nwagbin5"}, {"latitude": 41.564702, "longitude": 109.081861, "title": "China: Innermogolia\nOligoflexia_bacterium_nW3bin19"}, {"latitude": -36.21831, "longitude": 150.12168, "title": "Australia: Waganaga Inlet\nPlanctomycetota_bacterium_nwagbin3"}, {"latitude": 41.564702, "longitude": 109.081861, "title": "China: Innermogolia\nMagnetococcales_bacterium_nW5bin1"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nDesulfamplus_sp._nTSbin21"}, {"latitude": 41.564702, "longitude": 109.081861, "title": "China: Innermogolia\nCandidatus_Omnitrophota_bacterium_nW3bin14"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nDesulfamplus_sp._nTSbin4"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nGammaproteobacteria_bacterium_nTSbin2"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nDesulfamplus_sp._nTSbin20"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nPlanctomycetota_bacterium_nTSbin13"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nAlphaproteobacteria_bacterium_nTSbin12"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nDesulfobulbaceae_bacterium_nTSbin18"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nDesulfamplus_sp._nTSbin15"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nSAR324_cluster_bacterium_nTSbin10"}, {"latitude": 37.197953, "longitude": 96.868083, "title": "China: Tuosu Lake, Qinghai\nDesulfobacterales_bacterium_nTSbin1"}, {"latitude": 37.624414, "longitude": 93.733812, "title": "China: Shuishangyadan, Qinghai\nAlphaproteobacteria_bacterium_nSSYDbin4"}, {"latitude": 38.229771, "longitude": 90.697681, "title": "China: Lake Qinghai\nDesulfamplus_sp._nS315bin44"}, {"latitude": 38.229771, "longitude": 90.697681, "title": "China: Lake Qinghai\nDesulfamplus_sp._nS315bin9"}, {"latitude": 38.229771, "longitude": 90.697681, "title": "China: Lake Qinghai\nGammaproteobacteria_bacterium_nS315bin38"}, {"latitude": 38.229771, "longitude": 90.697681, "title": "China: Lake Qinghai\nCandidatus_Omnitrophota_bacterium_nS315bin20"}, {"latitude": 38.229771, "longitude": 90.697681, "title": "China: Lake Qinghai\nDesulfamplus_sp._nS315bin3"}, {"latitude": 38.229771, "longitude": 90.697681, "title": "China: Lake Qinghai\nCandidatus_Omnitrophota_bacterium_nS315bin24"}, {"latitude": 47.69541, "longitude": 119.30422, "title": "China: Innermogolia\nMagnetococcales_bacterium_nQXH2bin5"}, {"latitude": 47.69541, "longitude": 119.30422, "title": "China: Innermogolia\nMagnetococcales_bacterium_nQXH2bin1"}, {"latitude": 47.74777, "longitude": 119.33694, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nQXH1bin1"}, {"latitude": -36.23413, "longitude": 150.06798, "title": "Australia: Punkally Creek\nNitrospinota_bacterium_nPCRbin9"}, {"latitude": -36.23413, "longitude": 150.06798, "title": "Australia: Punkally Creek\nSAR324_cluster_bacterium_nPCRbin7"}, {"latitude": -38.46575, "longitude": 144.09288, "title": "Australia: Painkalac Creek\nZetaproteobacteria_bacterium_nPCbin1"}, {"latitude": -36.23413, "longitude": 150.06798, "title": "Australia: Punkally Creek\nGammaproteobacteria_bacterium_nPCRbin5"}, {"latitude": -36.23413, "longitude": 150.06798, "title": "Australia: Punkally Creek\nSAR324_cluster_bacterium_nPCRbin10"}, {"latitude": 47.9275, "longitude": 119.54638, "title": "China: Innermogolia\nMagnetococcales_bacterium_nNGHbin2"}, {"latitude": 47.9275, "longitude": 119.54638, "title": "China: Innermogolia\nMagnetococcales_bacterium_nNGHbin14"}, {"latitude": 41.549487, "longitude": 109.05952, "title": "China: Innermogolia\nOligoflexia_bacterium_nN3bin31"}, {"latitude": 47.9275, "longitude": 119.54638, "title": "China: Innermogolia\nMagnetococcales_bacterium_nNGHbin13"}, {"latitude": 47.9275, "longitude": 119.54638, "title": "China: Innermogolia\nNitrospinota_bacterium_nNGHbin12"}, {"latitude": 41.549487, "longitude": 109.05952, "title": "China: Innermogolia\nOligoflexia_bacterium_nN3bin16"}, {"latitude": 41.549487, "longitude": 109.05952, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nN3bin14"}, {"latitude": 41.549487, "longitude": 109.05952, "title": "China: Innermogolia\nDesulfamplus_sp._nN2-2bin5"}, {"latitude": 41.549487, "longitude": 109.05952, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nN2-2bin2"}, {"latitude": 41.549487, "longitude": 109.05952, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nN2-2bin1"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin6"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Beijing, Lake Miyun\nMagnetococcales_bacterium_nMYbin5"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin4"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin3"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin2"}, {"latitude": 40.48874, "longitude": 117.00714, "title": "China: Beijing, Lake Miyun\nNitrospirota_bacterium_nMYbin1"}, {"latitude": -36.73874, "longitude": 147.16443, "title": "Australia: Mount Beauty Pondage\nCandidatus_Omnitrophota_bacterium_nMBPbin3"}, {"latitude": -36.73874, "longitude": 147.16443, "title": "Australia: Mount Beauty Pondage\nMagnetococcales_bacterium_nMBPbin6"}, {"latitude": 37.283722, "longitude": 96.859816, "title": "China: Qinghai, Keluke Lake\nOligoflexia_bacterium_nKLKbin5"}, {"latitude": 37.283722, "longitude": 96.859816, "title": "China: Qinghai, Keluke Lake\nMagnetococcales_bacterium_nKLKbin4"}, {"latitude": 37.283722, "longitude": 96.859816, "title": "China: Qinghai, Keluke Lake\nSAR324_cluster_bacterium_nKLKbin6"}, {"latitude": 37.283722, "longitude": 96.859816, "title": "China: Qinghai, Keluke Lake\nAlphaproteobacteria_bacterium_nKLKbin1"}, {"latitude": 37.283722, "longitude": 96.859816, "title": "China: Qinghai, Keluke Lake\nOligoflexia_bacterium_nKLKbin12"}, {"latitude": 40.223972, "longitude": 122.083844, "title": "China: Jinshawan, Yingkou\nMagnetococcales_bacterium_nJSWbin3"}, {"latitude": 40.223972, "longitude": 122.083844, "title": "China: Jinshawan, Yingkou\nMagnetococcales_bacterium_nJSWbin2"}, {"latitude": 40.223972, "longitude": 122.083844, "title": "China: Jinshawan, Yingkou\nMagnetococcales_bacterium_nJSWbin1"}, {"latitude": 41.686682, "longitude": 108.39418, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nJC2bin54"}, {"latitude": 41.687541, "longitude": 108.393862, "title": "China: Innermogolia\nDesulfamplus_sp._nJC1bin9"}, {"latitude": 49.06944, "longitude": 117.75694, "title": "China: Innermogolia\nDesulfamplus_sp._nHLHbin7"}, {"latitude": 41.687541, "longitude": 108.393862, "title": "China: Innermogolia\nAlphaproteobacteria_bacterium_nJC1bin3"}, {"latitude": 49.06944, "longitude": 117.75694, "title": "China: Innermogolia\nDesulfobacterales_bacterium_nHLHbin5"}, {"latitude": 49.06944, "longitude": 117.75694, "title": "China: Innermogolia\nCandidatus_Omnitrophota_bacterium_nHLHbin2"}, {"latitude": 41.573047, "longitude": 108.313566, "title": "China: Innermogolia\nDesulfamplus_sp._nHGRbin17"}, {"latitude": 41.573047, "longitude": 108.313566, "title": "China: Innermogolia\nCandidatus_Omnitrophota_bacterium_nHGRbin18"}, {"latitude": 41.573047, "longitude": 108.313566, "title": "China: Innermogolia\nCandidatus_Riflebacteria_bacterium_nHGRbin4"}, {"latitude": 34.25287, "longitude": 108.92187, "title": "China: Xian city moat\nNitrospirota_bacterium_nHCHbin2"}, {"latitude": 34.25287, "longitude": 108.92187, "title": "China: Xian city moat\nMagnetococcales_bacterium_nHCHbin1"}, {"latitude": 31.290556, "longitude": 114.913333, "title": "China: Hongan\nMagnetococcales_bacterium_nHA5abin3"}, {"latitude": 31.174289, "longitude": 114.543941, "title": "China: Hongan\nMagnetococcales_bacterium_nHAa3bin1"}, {"latitude": 31.290556, "longitude": 114.913333, "title": "China: Hongan\nMagnetococcales_bacterium_nHA5abin2"}, {"latitude": 31.292222, "longitude": 114.921667, "title": "China: Hongan\nMagnetococcales_bacterium_nHA4bin8"}, {"latitude": 31.292222, "longitude": 114.921667, "title": "China: Hongan\nOligoflexales_bacterium_nHA4bin4"}, {"latitude": 31.173819, "longitude": 114.547642, "title": "China: Hongan\nMagnetococcales_bacterium_nHA3dbin2"}, {"latitude": 31.292222, "longitude": 114.921667, "title": "China: Hongan\nMagnetococcales_bacterium_nHA4bin1"}, {"latitude": -38.69715, "longitude": 143.15477, "title": "Australia: Gellibrand River\nMagnetococcales_bacterium_nGRbin4"}, {"latitude": 31.173819, "longitude": 114.547642, "title": "China: Hongan\nMagnetococcales_bacterium_nHA3dbin1"}, {"latitude": 31.295, "longitude": 114.916944, "title": "China: Hongan\nMagnetococcales_bacterium_nHA1bin2"}, {"latitude": -38.69715, "longitude": 143.15477, "title": "Australia: Gellibrand River\nFibrobacteria_bacterium_nGRbin1"}, {"latitude": -38.5338, "longitude": 143.97832, "title": "Australia: Erskine River\nMagnetococcales_bacterium_nER1bin6"}, {"latitude": -38.5359, "longitude": 143.97478, "title": "Australia: Erskine River\nCandidatus_Magnetomorum_sp._nER2bin1"}, {"latitude": -38.5338, "longitude": 143.97832, "title": "Australia: Erskine River\nMagnetococcales_bacterium_nER1bin1"}, {"latitude": -38.5338, "longitude": 143.97832, "title": "Australia: Erskine River\nDesulfamplus_sp._nER1bin2"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin7"}, {"latitude": -38.5338, "longitude": 143.97832, "title": "Australia: Erskine River\nGammaproteobacteria_bacterium_nER1bin10"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin8"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin6"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nMagnetococcales_bacterium_nDJH8bin2"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH8bin13"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH8bin5"}, {"latitude": 31.48944, "longitude": 109.99638, "title": "China: Dajiu Lake\nDesulfovibrionaceae_bacterium_nDJH8bin10"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH6bin5"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH6bin20"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH6bin28"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nCandidatus_Riflebacteria_bacterium_nDJH6bin19"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH6bin18"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH6bin14"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH6bin13"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH6bin1"}, {"latitude": 31.490422, "longitude": 109.995886, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH5bin4"}, {"latitude": 31.490422, "longitude": 109.995886, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH5bin8"}, {"latitude": 31.49055, "longitude": 109.99611, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH6bin12"}, {"latitude": 31.49194, "longitude": 109.99472, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH2bin18"}, {"latitude": 31.49194, "longitude": 109.99472, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH2bin9"}, {"latitude": 31.485181, "longitude": 110.001483, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH15bin8"}, {"latitude": 31.49194, "longitude": 109.99472, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH2bin13"}, {"latitude": 31.49194, "longitude": 109.99472, "title": "China: Dajiu Lake\nDesulfovibrionaceae_bacterium_nDJH2bin10"}, {"latitude": 31.485181, "longitude": 110.001483, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH15bin6"}, {"latitude": 31.485181, "longitude": 110.001483, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH15bin2"}, {"latitude": 31.483503, "longitude": 110.000844, "title": "China: Dajiu Lake\nCandidatus_Magnetobacteriaceae_bacterium_nDJH14bin9"}, {"latitude": 31.483503, "longitude": 110.000844, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH14bin7"}, {"latitude": 31.485181, "longitude": 110.001483, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH15bin13"}, {"latitude": 31.485181, "longitude": 110.001483, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH15bin4"}, {"latitude": 31.483503, "longitude": 110.000844, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH14bin5"}, {"latitude": 31.483503, "longitude": 110.000844, "title": "China: Dajiu Lake\nCandidatus_Riflebacteria_bacterium_nDJH14bin3"}, {"latitude": 31.483503, "longitude": 110.000844, "title": "China: Dajiu Lake\nAlphaproteobacteria_bacterium_nDJH14bin10"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin3"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nDeltaproteobacteria_bacterium_nDJH13bin5"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin21"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH13bin20"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin15"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nCandidatus_Omnitrophota_bacterium_nDJH13bin13"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin1"}, {"latitude": 30.555833, "longitude": 114.411389, "title": "China: Lake East\nDesulfamplus_sp._nDH2bin3"}, {"latitude": -36.73426, "longitude": 146.81119, "title": "Australia: Lake Catani\nCandidatus_Omnitrophota_bacterium_nCal1bin2"}, {"latitude": -38.23694, "longitude": 144.42936, "title": "Australia: Corunna Lake\nMagnetococcales_bacterium_nCLbin10"}, {"latitude": 31.483672, "longitude": 110.000694, "title": "China: Dajiu Lake\nNitrospirota_bacterium_nDJH13bin19"}, {"latitude": 30.555833, "longitude": 114.411389, "title": "China: Lake East\nMagnetococcales_bacterium_nDH2bin7"}, {"latitude": 30.555833, "longitude": 114.411389, "title": "China: Lake East\nMagnetococcales_bacterium_nDH2bin6"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_nDC0425bin2"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_nDC0425bin4"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nNitrospirota_bacterium_nDC0425bin1"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_nDCbin4"}, {"latitude": 24.908133, "longitude": 102.74605, "title": "China: Lake Dianchi\nMagnetococcales_bacterium_nDCbin2"}, {"latitude": -38.23694, "longitude": 144.42936, "title": "Australia: Corunna Lake\nMagnetococcales_bacterium_nCLbin6"}, {"latitude": -36.73274, "longitude": 146.81226, "title": "Australia: Lake Catani\nCandidatus_Omnitrophota_bacterium_nCal2bin1"}, {"latitude": 47.19788, "longitude": 119.92877, "title": "China: Innermogolia\nNitrospinota_bacterium_nARSLQbin3"}, {"latitude": 47.19788, "longitude": 119.92877, "title": "China: Innermogolia\nMagnetococcales_bacterium_nARSLQbin1"}, {"latitude": 34.33, "longitude": 108.72, "title": "China: Shaanxi, Xianyang Lake\nCandidatus_Magnetobacterium_cryptolimnobacter_XYR"}, {"latitude": 34.33, "longitude": 108.72, "title": "China: Shaanxi, Xianyang Lake\nCandidatus_Magnetomicrobium_cryptolimnococcus_XYC"}, {"latitude": 56.048889, "longitude": 37.164722, "title": "Russia: Moscow Region, Durykino ravine\nCandidatus_Liberimonas_magnetica_DUR002"}, {"latitude": 56.048889, "longitude": 37.164722, "title": "Russia: Moscow Region, Durykino ravine\nCandidatus_Obscuribacterium_magneticum_DUR003"}, {"latitude": 55.63, "longitude": 39.74, "title": "Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe\nCandidatus_Magnetominusculus_sp._LBB02"}, {"latitude": 55.63, "longitude": 39.74, "title": "Russia: Moscow region, Shatura district, Lake Beloe Bordukovskoe\nSyntrophales_bacterium_LBB04"}, {"latitude": -37.78, "longitude": 49.64, "title": "Indian Ocean: Longqi hydrothermal vent field, ultraslow-spreading Southwestern Indian Ridge\nNitrospirota_bacterium_Dive96_bin3.242"}, {"latitude": 16.57, "longitude": 112.2, "title": "China: the Paracel Islands\nCandidatus_Magnetocorallium_paracelense_XS-1"}, {"latitude": 39.89, "longitude": 116.3, "title": "China: Lake Lianhuachi, Beijing\nCandidatus_Magnetobacterium_sp._LHC-1"}, {"latitude": 43.24560083, "longitude": 5.364499897, "title": "France: Pointe Rouge Marina in Marseille\nCandidatus_Terasakiella_magnetica_PR-1"}, {"latitude": 36.2302, "longitude": -116.7674, "title": "USA: Badwater Basin at Death Valley National Park, California\nDesulfamplus_magnetovallimortis_BW-1"}, {"latitude": 43.334222, "longitude": 5.175278, "title": "France: Carry-le-Rouet\nCandidatus_Desulfarcum_epimagneticum_CR-1"}, {"latitude": 36.0427571, "longitude": -114.7999856, "title": "Boulder Beach, Lake Mead, Nevada\nRhodospirillaceae_bacterium_LM-1"}, {"latitude": 45.5097222, "longitude": 2.90349999, "title": "France: Couze Pavin, Auvergne\nCandidatus_Terasakiella_magnetica_PR1"}, {"latitude": 33.201109, "longitude": -115.602421, "title": "Alamo River near the Salton Sea, California\nMagnetospirillum_sp._SS-4"}, {"latitude": 37.2452462, "longitude": -113.1446629, "title": "Pond near Zion National Park, Utah\nMagnetospirillum_sp._UT-4"}, {"latitude": 36.0427571, "longitude": -114.7999856, "title": "Boulder Beach, Lake Mead, Nevada\nMagnetospirillum_sp._LM-5"}, {"latitude": 34.7166667, "longitude": 137.366666, "title": "Japan: Atsumi Peninsula\nRhodovastum_atsumiense_G2-11"}, {"latitude": 38.4825, "longitude": 21.315, "title": "Greece: Aitoliko Lagoon\nPlanctomycetes_bacterium_SCGC_JGI090-P21"}, {"latitude": 25.55972426, "longitude": -90.38104391, "title": "northern gulf of mexico hypoxic zone\nUnclassified_Nitrospina_Bin_25"}, {"latitude": 36.9648, "longitude": -116.7241, "title": "USA: Nevada\nOmnitrophica_bacterium_SCGC_AG-290-C17"}, {"latitude": 57.4344, "longitude": 16.66, "title": "Sweden: Oskarshamn\nUncultured_microorganism_SbSrfc_SA12_01_D19"}, {"latitude": 67.93, "longitude": 20.36, "title": "Sweden: lake Ki1\nuncultured_Bdellovibrionaceae_bacterium_SFLP_MTB_Ki1-2-2m_bin5"}, {"latitude": 67.93, "longitude": 20.36, "title": "Sweden: lake Ki1\nuncultured_Bdellovibrionaceae_bacterium_SFLP_MTB_Ki1-2-7m_bin20"}, {"latitude": 67.65, "longitude": 21.17, "title": "Sweden: lake Haukij?rvi\nuncultured_Bdellovibrionia_bacterium_SFLP_MTB_Ki3-D4_bin3"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-3-65m_bin36"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-5-9m_bin60"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Bdellovibrionia_bacterium_SFLP_MTB_LJ-7-9m_bin42"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Oligoflexia_bacterium_SFLP_MTB_LJ-13-9m_bin1"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Day2-5_bin11"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Day2-6_bin13"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Ja1-D5_bin27"}, {"latitude": 67.93, "longitude": 20.36, "title": "Sweden: lake Ki1\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Ki1-2-7m_bin29"}, {"latitude": 64.15, "longitude": 18.8, "title": "Sweden: lake N?stj?rnen (711940-164576)\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Umea1p4_bin7"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc080925-7m_bin41"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090519-7m_bin30"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090519-8m_bin12"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090721-6m_bin27"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090721-7m_bin30"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Desulfatirhabdiaceae_bacterium_SFLP_MTB_Loc090907-6m_bin20"}, {"latitude": 55.23, "longitude": -77.7, "title": "Canada: pond SAS2A\nuncultured_Geobacterales_bacterium_SFLP_MTB_A4_bin1"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ja1-D5_bin9"}, {"latitude": 67.92, "longitude": 20.37, "title": "Sweden: lake Kiruna 754378??69136\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ki2-D4_bin37"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-15m_bin6"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-4m_bin11"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_Ja1-D4_bin17"}, {"latitude": 61.08, "longitude": 25.03, "title": "Finland: lake Lovoj?rvi\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_LJ-3-4m_bin33"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_AM-lipid-02-D5_bin1"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_AM4_bin5"}, {"latitude": 55.23, "longitude": -77.7, "title": "Canada: pond SAS2A\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_A3_bin18"}, {"latitude": 55.23, "longitude": -77.7, "title": "Canada: pond SAS2A\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_A4_bin21"}, {"latitude": 55.23, "longitude": -77.7, "title": "Canada: pond SAS2B\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_D3_bin2"}, {"latitude": 55.23, "longitude": -77.7, "title": "Canada: pond SAS2B\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_D4_bin5"}, {"latitude": 55.23, "longitude": -77.69, "title": "Canada: pond SAS2D\nuncultured_Pseudopelobacteraceae_bacterium_SFLP_MTB_E5_bin6"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Smithellaceae_bacterium_SFLP_MTB_Loc090519-8-7m_bin35"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Syntrophales_bacterium_SFLP_MTB_Day2-5_bin12"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Syntrophales_bacterium_SFLP_MTB_Day2-6_bin17"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Syntrophales_bacterium_SFLP_MTB_Ja1-D5_bin7"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Syntrophorhabdaceae_bacterium_SFLP_MTB_Ja1-D5_bin2"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-01-D7_bin11"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-01-D8_bin17"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-02-D6_bin11"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Desulfovibrionaceae_bacterium_SFLP_MTB_AM-lipid-02-D7_bin42"}, {"latitude": 67.65, "longitude": 21.17, "title": "Sweden: lake Haukij?rvi\nuncultured_Hydrogenedentiales_bacterium_SFLP_MTB_Ki3-D4_bin17"}, {"latitude": 63.35, "longitude": 14.46, "title": "Sweden: lake Lomtj?rnan (703480-142137)\nuncultured_Polyangiaceae_bacterium_SFLP_MTB_KT4_bin17"}, {"latitude": 67.93, "longitude": 20.36, "title": "Sweden: lake Ki1\nuncultured_Omnitrophota_bacterium_SFLP_MTB_Ki1-2-7m_bin21"}, {"latitude": 67.92, "longitude": 20.37, "title": "Sweden: lake Kiruna 754378??69136\nuncultured_Omnitrophota_bacterium_SFLP_MTB_Ki2-D4_bin23"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Omnitrophales_bacterium_SFLP_MTB_AM5_bin22"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Omnitrophales_bacterium_SFLP_MTB_AM-2014-D8_bin43"}, {"latitude": 61.23, "longitude": 25.14, "title": "Finland: lake Mekkoj?rvi\nuncultured_Omnitrophales_bacterium_SFLP_MTB_MJ4_bin9"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Azospirillaceae_bacterium_SFLP_MTB_AM-2014-D3_bin8"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Azospirillaceae_bacterium_SFLP_MTB_AM-2014-D4_bin6"}, {"latitude": 61.24, "longitude": 25.06, "title": "Finland: lake Valkea Kotinen\nuncultured_Azospirillaceae_bacterium_SFLP_MTB_VK3_bin11"}, {"latitude": 64.12, "longitude": 18.78, "title": "Sweden: lake Bj?rntj?rnan (711632-164487)\nuncultured_Azospirillaceae_bacterium_SFLP_MTB_Umea3p3_bin40"}, {"latitude": 64.12, "longitude": 18.78, "title": "Sweden: lake Bj?rntj?rnan (711632-164487)\nuncultured_Azospirillaceae_bacterium_SFLP_MTB_Umea3p4_bin32"}, {"latitude": 47.02, "longitude": 7.0, "title": "Switzerland: lake Loclat\nuncultured_Magnetospirillum_SFLP_MTB_Loc080925-5-5m_bin37"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Phaeospirillum_SFLP_MTB_AM-lipid-02-D5_bin40"}, {"latitude": 61.24, "longitude": 25.06, "title": "Finland: lake Valkea Kotinen\nuncultured_Phaeospirillum_SFLP_MTB_VK2_bin2"}, {"latitude": 55.23, "longitude": -77.7, "title": "Canada: pond SAS2C\nuncultured_Phaeospirillum_SFLP_MTB_E3_bin4"}, {"latitude": 61.24, "longitude": 25.06, "title": "Finland: lake Valkea Kotinen\nuncultured_Telmatospirillum_SFLP_MTB_VK2_bin28"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Telmatospirillum_SFLP_MTB_AM-2014-D4_bin5"}, {"latitude": 61.21, "longitude": 25.11, "title": "Finland: lake Alinen Mustaj?rvi\nuncultured_Telmatospirillum_SFLP_MTB_AM-lipid-02-D5_bin20"}, {"latitude": 61.22, "longitude": 25.22, "title": "Finland: lake Keskinen Rajaj?rvi\nuncultured_gamma_proteobacterium_SFLP_MTB_KR4_bin15"}, {"latitude": 61.22, "longitude": 25.22, "title": "Finland: lake Keskinen Rajaj?rvi\nuncultured_gamma_proteobacterium_SFLP_MTB_KR4_bin9"}, {"latitude": 64.12, "longitude": 18.78, "title": "Sweden: lake Bj?rntj?rnan (711632-164487)\nuncultured_Magnetaquicoccaceae_bacterium_SFLP_MTB_Umea3p4_bin52"}, {"latitude": 43.24560083, "longitude": 5.364499897, "title": "France: Pointe Rouge Marina in Marseille\nCandidatus_Magnetococcus_massalia_strain_MO-1"}, {"latitude": 38.4825, "longitude": 21.315, "title": "Greece: Etoliko Lagoon\nRhodospirillaceae_bacterium_MAG_01419_mvb_30"}, {"latitude": 34.4, "longitude": 108.99, "title": "China: Lake Weiyanghu\nCandidatus_Magnetoovum_sp._WYHC-5"}, {"latitude": 40.406861, "longitude": 115.845167, "title": "China: Yeya Lake\nChromatiales_bacterium_YYHR-1"}, {"latitude": 40.041111, "longitude": 117.455833, "title": "China: Yuqiao Lake\nMagnetococcus_sp._YQC-5"}, {"latitude": 40.041111, "longitude": 117.455833, "title": "China: Yuqiao Lake\nNitrospirae_bacterium_YQR-1"}, {"latitude": 40.041111, "longitude": 117.455833, "title": "China: Yuqiao Lake\nMagnetococcus_sp._YQC-9"}, {"latitude": 34.263833, "longitude": 108.96925, "title": "China: Xingqinggong Lake\nMagnetococcus_sp._XQGC-1"}, {"latitude": 40.041111, "longitude": 117.455833, "title": "China: Yuqiao Lake\nMagnetococcus_sp._YQC-3"}, {"latitude": 40.041111, "longitude": 117.455833, "title": "China: Yuqiao Lake\nAlphaproteobacteria_bacterium_YQV-1"}, {"latitude": 34.403361, "longitude": 108.985944, "title": "China: Weiyanghu Lake\nMagnetospirillum_sp._WYHS-4"}, {"latitude": 39.675308, "longitude": 121.992772, "title": "China: Fuzhou Saltern\nGammaproteobacteria_bacterium_SHHR-1"}, {"latitude": 34.403361, "longitude": 108.985944, "title": "China: Weiyanghu Lake\nMagnetococcus_sp._THC-1_WYH"}, {"latitude": 34.403361, "longitude": 108.985944, "title": "China: Weiyanghu Lake\nMagnetococcus_sp._WYHC-3"}, {"latitude": 40.519917, "longitude": 116.835278, "title": "China: Miyun Lake\nNitrospirota_bacterium_MYC-10"}, {"latitude": 40.519917, "longitude": 116.835278, "title": "China: Miyun Lake\nMagnetococcus_sp._MYC-9"}, {"latitude": 36.671944, "longitude": 117.021814, "title": "China: Daminghu Lake\nMagnetococcus_sp._DMHC-6"}, {"latitude": 36.671944, "longitude": 117.021814, "title": "China: Daminghu Lake\nMagnetococcus_sp._DMHC-8"}, {"latitude": 36.671944, "longitude": 117.021814, "title": "China: Daminghu Lake\nMagnetococcus_sp._DMHC-1"}];
+
+for (var i = 0; i < cities.length; i++) {
+var city = cities[i];
+addCity(city.longitude, city.latitude, city.title);
+}
+
+function addCity(longitude, latitude, title) {
+pointSeries.data.push({
+  geometry: { type: "Point", coordinates: [longitude, latitude] },
+  title: title
+});
+}
+
+// Rotate animation
+chart.animate({
+key: "rotationX",
+from: 0,
+to: 360,
+duration: 30000,
+loops: Infinity
+});
+
+
+// Make stuff animate on load
+chart.appear(1000, 100);
+</script>
+
+
+    </main>
+
+    <script src="/MTBdatabase/static/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
